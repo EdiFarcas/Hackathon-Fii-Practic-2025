@@ -4,6 +4,7 @@ interface User {
   name: string;
   email: string;
   gamesWon: number;
+  plan?: string;
 }
 
 export default function ProfileClient({ user }: { user: User }) {
@@ -21,7 +22,11 @@ export default function ProfileClient({ user }: { user: User }) {
             </div>
             <div>
               <h1 className="text-3xl font-extrabold text-red-200 drop-shadow">{user.name}</h1>
-              {/* <p className="text-red-400 italic">🌟 Premium Member</p> */}
+              {user.plan && (
+                <p className="text-blue-300 italic mt-1 flex items-center gap-2">
+                  <span className="text-lg">💼</span> {user.plan}
+                </p>
+              )}
             </div>
           </div>
 
@@ -57,9 +62,6 @@ export default function ProfileClient({ user }: { user: User }) {
                       <span className="text-3xl font-extrabold text-red-200">{user.gamesWon}</span>
                     </div>
                   </div>
-                  {/* <button className="bg-red-700 text-white px-4 py-2 rounded-xl hover:bg-red-800 transition-all shadow-md font-semibold">
-                    Add Coins
-                  </button> */}
                 </div>
               </div>
             </div>

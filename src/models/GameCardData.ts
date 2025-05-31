@@ -4,6 +4,7 @@ export class GameCardData {
   description: string;
   difficulty: string;
   imageUrl: string;
+  solution: string;
   coordinates: { x: number; y: number };
 
   constructor(
@@ -11,9 +12,11 @@ export class GameCardData {
     description: string,
     difficulty: string,
     imageUrl: string,
+    solution: string,
     coordinates: { x: number; y: number }
   ) {
     this.title = title;
+    this.solution = solution;
     this.description = description;
     this.difficulty = difficulty;
     this.imageUrl = imageUrl;

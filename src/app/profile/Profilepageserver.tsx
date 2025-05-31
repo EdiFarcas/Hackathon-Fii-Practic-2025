@@ -118,36 +118,19 @@ export async function getUserProfile(userId?: string): Promise<UserProfileData |
     })
 
     // Combine recent games (both hosted and played)
-    const hostedGamesFormatted = user.gamesHosted.map((game: {
-      id: string
-      title: string
-      status: string
-      createdAt: Date
-      players: Array<{
-        userId: string
-        user: { name: string | null }
-      }>
-    }) => ({
+    const hostedGamesFormatted = user.gamesHosted.map(game => ({
       id: game.id,
-      title: game.title,
-      status: game.status,
-      createdAt: game.createdAt,
+      title: game.title ?? '',
+      status: game.status ?? '',
+      createdAt: game.createdAt ?? new Date(0),
       isHost: true
     }))
 
-    const playedGamesFormatted = user.gamesPlayed.map((gamePlayer: {
-      game: {
-        id: string
-        title: string
-        status: string
-        createdAt: Date
-        hostId: string
-      }
-    }) => ({
+    const playedGamesFormatted = user.gamesPlayed.map(gamePlayer => ({
       id: gamePlayer.game.id,
-      title: gamePlayer.game.title,
-      status: gamePlayer.game.status,
-      createdAt: gamePlayer.game.createdAt,
+      title: gamePlayer.game.title ?? '',
+      status: gamePlayer.game.status ?? '',
+      createdAt: gamePlayer.game.createdAt ?? new Date(0),
       isHost: false
     }))
 
@@ -241,7 +224,7 @@ export default async function ProfilePageServer({ userId }: { userId?: string })
     return (
       <div className="p-6">
         <h1 className="text-2xl font-bold text-red-600">User not found</h1>
-        <p>The requested user profile could not be loaded.</p>
+        <p className="text-gray-600">The requested user profile could not be loaded.</p>
       </div>
     )
   }

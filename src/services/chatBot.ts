@@ -16,6 +16,9 @@ export const openrouterChatbotService = async (userMessage: string, messageHisto
       body: JSON.stringify(payload),
     });
 
+  if (response.status === 429) {
+    throw new Error('You are sending messages too quickly or have reached the free tier limit. Please wait a minute and try again.');
+  }
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`);

@@ -49,7 +49,7 @@ export default function MurderMysteryGiveaway() {
                     <span className="mr-2">📖</span>Game Overview
                   </h3>
                   <p className="text-gray-200">
-                    Dark Stories are mysterious riddles where you're given a strange, often macabre scenario. 
+                    Dark Stories are mysterious riddles where you&#39;re given a strange, often macabre scenario. 
                     Your job is to uncover the hidden truth by asking only <strong className="text-red-300">YES or NO questions</strong>.
                   </p>
                 </div>
@@ -57,7 +57,7 @@ export default function MurderMysteryGiveaway() {
                 <ol className="list-decimal pl-8 space-y-4 text-gray-200 text-lg">
                   <li className="flex items-start">
                     <span className="mr-3 text-2xl">🎭</span>
-                    <span>A <strong className="text-red-300">Story Master</strong> reads a mysterious scenario (like "A man lives on the 20th floor but only takes the elevator to the 10th floor, then walks the rest")</span>
+                    <span>A <strong className="text-red-300">Story Master</strong> reads a mysterious scenario (like A man lives on the 20th floor but only takes the elevator to the 10th floor, then walks the rest)</span>
                   </li>
                   <li className="flex items-start">
                     <span className="mr-3 text-2xl">❓</span>
@@ -82,10 +82,10 @@ export default function MurderMysteryGiveaway() {
                     <span className="mr-2">💀</span>Example Dark Story
                   </h4>
                   <p className="text-gray-200 italic mb-2">
-                    "A woman enters a room, screams, and immediately knows her husband is dead. How?"
+                    &quot;A woman enters a room, screams, and immediately knows her husband is dead. How?&quot;
                   </p>
                   <p className="text-sm text-gray-400">
-                    Players must ask questions like "Was she at home?", "Did she see the body?", "Was there a phone call?" to uncover the solution.
+                    Players must ask questions like &quot;Was she at home?&quot;, &quot;Did she see the body?&quot;, &quot;Was there a phone call?&quot; to uncover the solution.
                   </p>
                 </div>
               </div>
@@ -167,11 +167,11 @@ export default function MurderMysteryGiveaway() {
                     </li>
                     <li className="flex items-start">
                       <span className="mr-3 text-xl">🧩</span>
-                      <span>Make sure there's a logical solution that can be discovered through yes/no questions</span>
+                      <span>Make sure there&#39;s a logical solution that can be discovered through yes/no questions</span>
                     </li>
                     <li className="flex items-start">
                       <span className="mr-3 text-xl">🎯</span>
-                      <span>Test your story with friends to ensure it's solvable but challenging</span>
+                      <span>Test your story with friends to ensure it&#39;s solvable but challenging</span>
                     </li>
                   </ul>
                 </div>

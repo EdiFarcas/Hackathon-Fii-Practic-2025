@@ -30,13 +30,6 @@ const ChatWindow: React.FC = () => {
   if (!session?.user?.name) {
     return <div className="p-8 text-center">Te rugăm să te autentifici pentru a folosi chatul.</div>;
   }
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-
-  if (!session?.user?.name) {
-    return <div className="p-8 text-center">Te rugăm să te autentifici pentru a folosi chatul.</div>;
-  }
 
   const handleSendMessage = async (text: string) => {
     const userMessage: ChatMessage = {

@@ -1,11 +1,17 @@
 'use client';
 
 import { useState } from "react";
+import { createStory } from "./homepageServe";
 
 export default function MurderMysteryGiveaway() {
   const [activeTab, setActiveTab] = useState("how");
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
+  const [showCreateStoryModal, setShowCreateStoryModal] = useState(false);
+  const [storyTitle, setStoryTitle] = useState("");
+  const [storyDescription, setStoryDescription] = useState("");
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishError, setPublishError] = useState("");
 
   const handleStartGame = (title: string) => {
     setModalTitle(title);
@@ -22,6 +28,31 @@ export default function MurderMysteryGiveaway() {
 
   const handleJoinLobby = () => {
     // Your logic for joining a lobby
+  };
+
+  const openCreateStoryModal = () => {
+    setShowCreateStoryModal(true);
+    setStoryTitle("");
+    setStoryDescription("");
+    setPublishError("");
+  };
+
+  const closeCreateStoryModal = () => {
+    setShowCreateStoryModal(false);
+  };
+
+  const handlePublishStory = async () => {
+    setIsPublishing(true);
+    setPublishError("");
+    try {
+      // Folosește apel server action, nu fetch
+      await createStory({ title: storyTitle, description: storyDescription });
+      setShowCreateStoryModal(false);
+    } catch {
+      setPublishError("Eroare la publicare. Încearcă din nou.");
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   return (
@@ -207,10 +238,16 @@ export default function MurderMysteryGiveaway() {
                   </ul>
                 </div>
                 
-                <div className="bg-red-900/20 p-6 rounded-lg border border-red-800/50">
+                <div className="bg-red-900/20 p-6 rounded-lg border border-red-800/50 flex flex-col gap-4">
                   <p className="text-red-200">
                     <strong>Coming Soon:</strong> Story creation form will be available here where you can submit your own Dark Stories for the community to solve!
                   </p>
+                  <button
+                    onClick={openCreateStoryModal}
+                    className="bg-red-700 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-xl text-lg transition-all self-start"
+                  >
+                    ✍️ Create Story
+                  </button>
                 </div>
               </div>
             </div>
@@ -263,6 +300,45 @@ export default function MurderMysteryGiveaway() {
         </div>
       )}
 
+      {/* Modal pentru crearea unei povești */}
+      {showCreateStoryModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-lg z-50 flex items-center justify-center">
+          <div className="bg-gray-900 p-8 rounded-2xl border-2 border-red-700 max-w-lg w-full relative text-white text-center space-y-6">
+            <button
+              onClick={closeCreateStoryModal}
+              className="absolute top-4 right-4 text-red-300 hover:text-white text-xl font-bold"
+            >
+              ✖
+            </button>
+            <h2 className="text-2xl font-bold text-red-300 mb-4">Creează o poveste nouă</h2>
+            <div className="flex flex-col gap-4 text-left">
+              <label className="font-semibold text-red-200">Titlu</label>
+              <input
+                type="text"
+                value={storyTitle}
+                onChange={e => setStoryTitle(e.target.value)}
+                className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="Titlul poveștii"
+              />
+              <label className="font-semibold text-red-200 mt-2">Descriere</label>
+              <textarea
+                value={storyDescription}
+                onChange={e => setStoryDescription(e.target.value)}
+                className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500 min-h-[100px]"
+                placeholder="Descrierea poveștii"
+              />
+            </div>
+            {publishError && <p className="text-red-400 font-semibold">{publishError}</p>}
+            <button
+              onClick={handlePublishStory}
+              disabled={isPublishing || !storyTitle.trim() || !storyDescription.trim()}
+              className={`bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-xl text-lg transition-all ${isPublishing ? 'opacity-60 cursor-not-allowed' : ''}`}
+            >
+              {isPublishing ? 'Se publică...' : '📢 Publish Story'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

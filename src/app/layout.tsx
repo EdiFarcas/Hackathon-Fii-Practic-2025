@@ -1,6 +1,6 @@
 import './globals.css';
 import Navbar from '../components/NavBar';
-import { Providers } from '../components/Providers';
+import { Providers } from '@/components/Providers';
 
 export default function RootLayout({
   children,
@@ -9,14 +9,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="text-[var(--foreground)] bg-gray-100">
+      <body className="bg-gray-100">
         <Providers>
-          <div className="flex">
-            <Navbar />
-            <main className="p-6 flex-1 min-h-screen" style={{ marginLeft: "var(--nav-width)" }}>
-              {children}
-            </main>
-          </div>
+          {/* Navbar always on top */}
+          <Navbar />
+
+          {/* Padding to push content below navbar */}
+          <main className="pt-16 px-4">
+            {children}
+          </main>
         </Providers>
       </body>
     </html>

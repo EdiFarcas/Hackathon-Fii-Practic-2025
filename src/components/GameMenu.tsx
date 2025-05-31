@@ -2,7 +2,7 @@
 'use client';
 import React, { useState } from 'react';
 import GameCard from './GameCard';
-import ChatWindow from './chat/ChatWindow';
+import Chatwindow from './chat/ChatWindow';
 
 const GameMenu: React.FC = () => {
   const [currentTurn, setCurrentTurn] = useState(5);
@@ -72,10 +72,8 @@ const GameMenu: React.FC = () => {
             </div>
           </GameCard>
 
-          {/* Card Master/Players info - Centru jos */}
           <div>
-            <ChatWindow />
-
+              <Chatwindow/>
           </div>
 
         </div>

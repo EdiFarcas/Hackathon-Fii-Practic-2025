@@ -43,6 +43,7 @@ model User {
   sessions      Session[]
   gamesHosted   Game[]    @relation("GameHost")
   gamesPlayed   GamePlayer[]
+  gamesWon      Int       @default(0)
   createdAt     DateTime  @default(now())
 }
 

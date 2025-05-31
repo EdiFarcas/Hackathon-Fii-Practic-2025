@@ -38,11 +38,17 @@ const ChatWindow: React.FC = () => {
       username: session?.user?.name || 'User',
       timestamp: new Date(),
     };
+    // Adaugă mesajul userului la istoric
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setIsBotTyping(true);
 
     try {
-      const botResponseText = await openrouterChatbotService(text);
+      // Transformă istoricul în formatul cerut de OpenRouter
+      const messageHistory = [...messages, userMessage].map((msg) => ({
+        role: msg.sender === 'bot' ? 'assistant' : 'user',
+        content: msg.text,
+      }));
+      const botResponseText = await openrouterChatbotService(text, messageHistory);
       
       if (botResponseText.includes("Congratulations, you found the solution!")) {
         setShowWinModal(true);

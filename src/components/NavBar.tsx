@@ -3,10 +3,12 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import AuthButtons from './AuthButtons';
+import MarketPlaceMenu from './MarketPlaceMenu';
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showMarket, setShowMarket] = useState(false);
 
   useEffect(() => {
     if (pathname === '/gamemenu') {
@@ -66,11 +68,21 @@ export default function Navbar() {
             {!isCollapsed && "Profile"}
           </Link>
         </li>
+        <li>
+          <button
+            className="flex items-center p-2 rounded hover:bg-gray-700 focus:outline-none"
+            onClick={() => setShowMarket(true)}
+          >
+            <span className="mr-2">🛒</span>
+            {!isCollapsed && "MarketPlace"}
+          </button>
+        </li>
       </ul>
 
       <div className="ml-auto">
         <AuthButtons/>
       </div>
+      {showMarket && <MarketPlaceMenu onClose={() => setShowMarket(false)} />}
     </nav>
   );
 }

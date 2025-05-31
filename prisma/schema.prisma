@@ -41,10 +41,10 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  gamesHosted   Game[]    @relation("GameHost")
-  gamesPlayed   GamePlayer[]
+  gamesHosted   Game[]    @relation("GameHost")  gamesPlayed   GamePlayer[]
   storiesAuthored Story[] @relation("StoryAuthor")
   gamesWon      Int       @default(0)
+  coins         Int       @default(0)
   createdAt     DateTime  @default(now())
 }
 

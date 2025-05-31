@@ -29,11 +29,14 @@ export const authOptions = {
         return false;
       }
       return true;
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    },    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, user }: { session: any; user: any }) {
-      session.user.id = user.id;
-      session.user.youtubeHandle = user.youtubeHandle; // Only attach YouTube handle
+      if (session?.user) {
+        session.user.id = user.id;
+        session.user.youtubeHandle = user.youtubeHandle;
+        session.user.coins = user.coins ?? 0;
+        session.user.gamesWon = user.gamesWon ?? 0;
+      }
       return session;
     },
   },

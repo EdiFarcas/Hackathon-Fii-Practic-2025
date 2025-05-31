@@ -20,7 +20,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUsername }) 
   }, [messages]);
 
   return (
-    <div className="flex-grow p-4 space-y-4 overflow-y-auto bg-gray-50">
+    <div className="flex-grow p-4 space-y-4 overflow-y-auto bg-transparent">
       {messages.map((msg) => (
         <MessageItem key={msg.id} message={msg} currentUsername={currentUsername} />
       ))}

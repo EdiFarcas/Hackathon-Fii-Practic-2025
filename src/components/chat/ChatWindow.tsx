@@ -18,7 +18,7 @@ const ChatWindow: React.FC = () => {
     setMessages([
       {
         id: 'initial-bot-message',
-        text: 'Salut! Sunt Chatbot-ul tău. Cum te pot ajuta?',
+        text: 'Hello! I am your Master. Ask me a Yes/No question about the story, and I will answer you.',
         sender: 'bot',
         username: 'Master',
         timestamp: new Date(),
@@ -29,13 +29,14 @@ const ChatWindow: React.FC = () => {
   if (status === "loading") {
     return <div>Loading...</div>;
   }
-
   const handleSendMessage = async (text: string) => {
+    const username = session?.user?.name || 'User';
+    console.log('Current user:', username); // Debug log
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       text,
       sender: 'user',
-      username: session?.user?.name || 'User',
+      username: username,
       timestamp: new Date(),
     };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
@@ -59,7 +60,7 @@ const ChatWindow: React.FC = () => {
       console.error("Error getting response from bot:", error);
       const errorMessage: ChatMessage = {
         id: `error-${Date.now()}`,
-        text: "Oops, a apărut o eroare la comunicarea cu bot-ul.",
+        text: "Oops, there was an error while chatting with AI.",
         sender: 'bot',
         username: 'Error',
         timestamp: new Date(),
@@ -68,11 +69,8 @@ const ChatWindow: React.FC = () => {
     } finally {
       setIsBotTyping(false);
     }
-  };
-
-  return (
-    <div 
-      className="flex flex-col border border-gray-300 shadow-lg bg-white h-full"
+  };  return (    <div 
+      className="flex flex-col border-3 border-red-600/70 shadow-lg h-full bg-neutral-600/40 backdrop-blur-sm"
       style={{
         position: 'absolute',
         inset: '0',
@@ -80,12 +78,11 @@ const ChatWindow: React.FC = () => {
         height: '100%',
         zIndex: 40,
       }}
-  >
-      <header className="p-4 bg-red-600 text-white text-center">
-        <h1 className="text-xl font-semibold">Chat cu Bot</h1>
+  >      <header className="p-4 bg-red-600/70 backdrop-blur-sm text-white text-center">
+        <h1 className="text-xl font-semibold">Master's hints</h1>
       </header>
       <MessageList messages={messages} currentUsername={session?.user?.name || 'User'} />
-      {isBotTyping && <div className="p-2 text-sm text-gray-500 italic text-center">Bot-ul scrie...</div>}
+      {isBotTyping && <div className="p-2 text-sm text-gray-500 italic text-center">The Master is answearing...</div>}
       <MessageInput onSendMessage={handleSendMessage} isSending={isBotTyping} />
 
       {/* Modal de câștig */}

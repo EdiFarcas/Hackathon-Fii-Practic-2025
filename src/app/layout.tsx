@@ -8,10 +8,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-gray-100">
+      <body className="text-[var(--foreground)] bg-gray-100">
         <div className="flex">
           <Navbar />
-          <main className="ml-64 p-6 flex-1 min-h-screen">
+          <main className="p-6 flex-1 min-h-screen" style={{ marginLeft: "var(--nav-width)" }}>
             {children}
           </main>
         </div>

@@ -1,6 +1,9 @@
 import { PrismaClient } from '@prisma/client'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth' // Adjust path to your auth config
+// Update the path below to the correct relative path if needed
+// Update the path below to the correct relative path if needed
+// Update the path below to the correct relative path if needed
+import { authOptions } from '../api/auth/[...nextauth]/authOptions' // Adjust the path if your file is in a different location and ensure the extension matches
 
 const prisma = new PrismaClient()
 
@@ -115,7 +118,16 @@ export async function getUserProfile(userId?: string): Promise<UserProfileData |
     })
 
     // Combine recent games (both hosted and played)
-    const hostedGamesFormatted = user.gamesHosted.map(game => ({
+    const hostedGamesFormatted = user.gamesHosted.map((game: {
+      id: string
+      title: string
+      status: string
+      createdAt: Date
+      players: Array<{
+        userId: string
+        user: { name: string | null }
+      }>
+    }) => ({
       id: game.id,
       title: game.title,
       status: game.status,
@@ -123,7 +135,15 @@ export async function getUserProfile(userId?: string): Promise<UserProfileData |
       isHost: true
     }))
 
-    const playedGamesFormatted = user.gamesPlayed.map(gamePlayer => ({
+    const playedGamesFormatted = user.gamesPlayed.map((gamePlayer: {
+      game: {
+        id: string
+        title: string
+        status: string
+        createdAt: Date
+        hostId: string
+      }
+    }) => ({
       id: gamePlayer.game.id,
       title: gamePlayer.game.title,
       status: gamePlayer.game.status,
@@ -231,13 +251,6 @@ export default async function ProfilePageServer({ userId }: { userId?: string })
       {/* User Info Section */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <div className="flex items-center space-x-4">
-          {userProfile.image && (
-            <img 
-              src={userProfile.image} 
-              alt="Profile" 
-              className="w-16 h-16 rounded-full"
-            />
-          )}
           <div>
             <h1 className="text-2xl font-bold">{userProfile.name || 'Anonymous User'}</h1>
             <p className="text-gray-600">{userProfile.email}</p>

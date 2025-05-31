@@ -11,15 +11,19 @@ interface GameCardProps {
   className?: string;
 }
 
-const GameCard: React.FC<GameCardProps> = ({ title, children, className = "" }) => {
+
+const GameCard: React.FC<GameCardProps> = ({ title, children, className }) => {
   return (
-    <div className={`bg-white-100 border-2 border-black rounded-lg p-4 shadow-lg ${className}`}>
-      <h2 className="text-xl font-bold mb-3 text-center">{title}</h2>
-      <div className="text-sm">
-        {children}
+    <div className={`bg-gray-800/70 backdrop-blur-sm rounded-lg shadow-lg h-full text-white border-4 border-red-500 ${className}`}>
+      <div className="p-2">
+        <h3 className="font-semibold text-gray-200 mb-2 text-3xl">{title}</h3>
+        <div className="text-2xl">
+          {children}
+        </div>
       </div>
     </div>
   );
 };
+
 
 export default GameCard;

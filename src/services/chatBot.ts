@@ -11,7 +11,7 @@ export const openrouterChatbotService = async (userMessage: string): Promise<str
       'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
     },
     body: JSON.stringify({
-      model: 'meta-llama/llama-3-8b-instruct',
+      model: 'meta-llama/llama-4-maverick:free',
       messages: [
         { role: 'system', content: 'You are the "master" of a mystery murder game. You will know the prompt of the story, players will send you messages and you should respond only with "Yes/No" to their questions (or if they ask a question which cannot be answered with yes or no, you can say: "That is not a yes or no question".'},
         { role: 'user', content: userMessage }

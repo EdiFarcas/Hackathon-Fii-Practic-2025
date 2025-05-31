@@ -2,11 +2,48 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import GameCard from './GameCard';
-import Chatwindow from './chat/ChatWindow';
+import { useGesture } from '@use-gesture/react';
 
 const GameMenu: React.FC = () => {
   const [currentTurn, setCurrentTurn] = useState(5);
   const [screenWidth, setScreenWidth] = useState(1280); // Default desktop
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+
+  const cards = [
+    { id: 1, title: "TITLU 1", description: "Povestea începe aici...", difficulty: "Easy" },
+    { id: 2, title: "TITLU 2", description: "O nouă aventură se dezvăluie", difficulty: "Medium" },
+    { id: 3, title: "TITLU 3", description: "Misterul se adâncește", difficulty: "Hard" },
+    { id: 4, title: "TITLU 4", description: "Provocări neașteptate apar", difficulty: "Medium" },
+    { id: 5, title: "TITLU 5", description: "Secretele ies la iveală", difficulty: "Hard" },
+    { id: 6, title: "TITLU 6", description: "Finalul se apropie", difficulty: "Expert" },
+    { id: 7, title: "TITLU 7", description: "Ultima încercare", difficulty: "Legendary" },
+    { id: 8, title: "TITLU 8", description: "Epilog", difficulty: "Easy" },
+  ];
+
+  // Simplified gesture configuration - try this approach
+  // Modify the gesture configuration
+    const bind = useGesture({
+    onDrag: ({ movement: [mx], cancel }) => {
+        // If dragging left and not at last card
+        if (mx < -20 && currentCardIndex < cards.length - 1) {
+        setCurrentCardIndex(prev => prev + 1);
+        cancel();
+        }
+        // If dragging right and not at first card
+        else if (mx > 20 && currentCardIndex > 0) {
+        setCurrentCardIndex(prev => prev - 1);
+        cancel();
+        }
+    }
+    }, {
+    drag: {
+        delay: 0,
+        filterTaps: true,
+        threshold: 5,
+        bounds: { left: -20, right: 20 }, // Limits drag distance
+        rubberband: true // Adds resistance at bounds
+    }
+    });
 
   // Hook pentru a detecta dimensiunea ecranului
   useEffect(() => {
@@ -46,208 +83,177 @@ const GameMenu: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-1 sm:p-2">
-      <div className="w-full">
-        
-        {/* CSS Custom pentru breakpoint-uri responsive */}
-        <style jsx>{`
-          @media (min-width: 640px) {
-            .grid {
-              grid-template-columns: repeat(15, minmax(50px, 1fr)) !important;
-              grid-template-rows: repeat(25, minmax(45px, 1fr)) !important;
-            }
-          }
-          @media (min-width: 768px) {
-            .grid {
-              grid-template-columns: repeat(15, minmax(60px, 1fr)) !important;
-              grid-template-rows: repeat(25, minmax(50px, 1fr)) !important;
-            }
-          }
-          @media (min-width: 1024px) {
-            .grid {
-              grid-template-columns: repeat(15, minmax(70px, 1fr)) !important;
-              grid-template-rows: repeat(25, minmax(55px, 1fr)) !important;
-            }
-          }
-          @media (min-width: 1280px) {
-            .grid {
-              grid-template-columns: repeat(15, 80px) !important;
-              grid-template-rows: repeat(25, 60px) !important;
-            }
-          }
-        `}</style>
-        
-        {/* Grid RESPONSIVE cu 15 coloane și 25 linii */}
-        <div 
-          className="grid gap-1 sm:gap-2 border border-red-500 mx-auto w-full overflow-x-auto"
-          style={{
-            // Mobile: coloane mai mici
-            gridTemplateColumns: 'repeat(15, minmax(40px, 1fr))',
-            gridTemplateRows: 'repeat(25, minmax(40px, 1fr))',
-            minHeight: '70vh', // Minimum 70% din înălțimea viewport-ului
-            maxHeight: '90vh', // Maximum 90% din înălțimea viewport-ului
-          }}
-        >
+    <div 
+      className="h-screen p-1 sm:p-2 overflow-hidden"
+      style={{
+        backgroundImage: "url('/bggame.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+        <div className="w-full h-full">
           
-          {/* Card Players - Responsive cu poziție adaptivă */}
+          {/* Grid RESPONSIVE cu 25 coloane și 25 linii - fără scroll */}
           <div 
-            className="text-xs p-1 sm:p-2"
+            className="grid gap-1 sm:gap-2 mx-auto w-full h-full"
             style={{
-              gridColumn: 'var(--players-col, 11 / 16)',
-              gridRow: 'var(--players-row, 1 / 4)'
+              gridTemplateColumns: 'repeat(25, 1fr)',
+              gridTemplateRows: 'repeat(25, 1fr)',
             }}
           >
-            <GameCard title="Players" className="h-full text-xs sm:text-sm">
-              <ul className="space-y-1 text-xs">
-                {gameData.players.map((player, index) => (
-                  <li key={index} className="text-gray-800 truncate">{player}</li>
-                ))}
-              </ul>
-            </GameCard>
-          </div>
-
-          {/* Card Turn Info - MUTAT în stânga sus */}
-          <div 
-            className="text-xs p-2"
-            style={{
-              gridColumn: '1 / 5',    // Coloanele 1-4
-              gridRow: '1 / 3'        // Liniile 1-2
-            }}
-          >
-            <GameCard title={`Your turn in ${currentTurn}...`} className="h-full">
-              <div className="flex items-center justify-center h-full">
-                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm">😊</span>
-                </div>
-              </div>
-            </GameCard>
-          </div>
-
-<<<<<<< HEAD
-          {/* Card Titlu - MUTAT în centru, mai mare */}
-          <div 
-            className="text-xs p-2"
-            style={{
-              gridColumn: '4 / 12',   // Coloanele 4-11 (mai larg)
-              gridRow: '5 / 12'       // Liniile 5-11 (mai înalt)
-            }}
-          >
-            <GameCard title="TITLU" className="h-full">
-              <div className="mb-2">
-                <p className="text-gray-600 mb-1 text-xs">Description...</p>
-                <div className="space-y-1">
-                  <div className="h-1 bg-gray-100 rounded"></div>
-                  <div className="h-1 bg-gray-100 rounded w-3/4"></div>
-                  <div className="h-1 bg-gray-100 rounded w-1/2"></div>
-                </div>
-              </div>
-              
-              <div className="mb-2">
-                <p className="text-gray-600 text-xs">Difficulty: Easy/Hard...</p>
-              </div>
-=======
-          {/* Card Titlu - Dreapta */}
-          <GameCard title="TITLU" className="lg:col-span-1 lg:row-span-2">
-            <div className="mb-4">
-              <p className="text-gray-600 mb-2">Description ...</p>
-              <div className="space-y-1">
-                <div className="h-2 bg-gray-100 rounded"></div>
-                <div className="h-2 bg-gray-100 rounded w-3/4"></div>
-                <div className="h-2 bg-gray-100 rounded w-1/2"></div>
-              </div>
-            </div>
             
-            <div className="mb-4">
-              <p className="text-gray-600 mb-2">Difficulty: Easy/Hard...</p>
+            {/* Card Players - Responsive cu poziție adaptivă */}
+            <div 
+              className="text-xs p-1 sm:p-2"
+              style={{
+                gridColumn: '2 / 6',
+                gridRow: '2 / 8'
+              }}
+            >
+              <GameCard title="Players" className="h-full text-xs sm:text-sm">
+                <ul className="space-y-1 text-xs">
+                  {gameData.players.map((player, index) => (
+                    <li key={index} className="text-white truncate">{player}</li>
+                  ))}
+                </ul>
+              </GameCard>
             </div>
 
-            {/* Secțiunea Poza */}
-            <div className="bg-gray-100 border rounded-lg p-4 h-32 flex items-center justify-center">
-              <span className="text-gray-500 text-lg">{gameData.story}</span>
+            {/* Card Turn Info - MUTAT în stânga sus */}
+            <div 
+              className="text-xs p-1 sm:p-2"
+              style={{
+                gridColumn: '12 / 15',    // Coloanele 1-4
+                gridRow: '1 / 4'        // Liniile 1-2
+              }}
+            >
+              <GameCard title={`Your turn in ${currentTurn}...`} className="h-full">
+                <div className="flex items-center justify-center h-full">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                    <span className="text-xs sm:text-sm">😊</span>
+                  </div>
+                </div>
+              </GameCard>
             </div>
-          </GameCard>
 
-          {/* Card Questions - Stânga jos */}
-          <GameCard title="Questions" className="lg:col-span-1">
-            <div className="space-y-2">
-              <p><strong>Hint Question:</strong> 50 coins</p>
-              <p><strong>x2 Questions:</strong> 70 coins</p>
+            {/* Card Titlu - SIMPLIFIED drag implementation */}
+            <div 
+              className="text-xs p-1 sm:p-2"
+              style={{
+                gridColumn: '18 / 25',
+                gridRow: '3 / 23',
+              }}
+            >
+              <div 
+                className="h-full cursor-grab active:cursor-grabbing select-none"
+                {...bind()}
+                onMouseDown={(e) => {
+                  console.log('Mouse down on card');
+                  e.preventDefault();
+                }}
+                onTouchStart={(e) => {
+                  console.log('Touch start on card');
+                }}
+                style={{
+                  touchAction: 'none', // Disable all default touch behaviors
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none',
+                  MozUserSelect: 'none',
+                  msUserSelect: 'none',
+                  WebkitTouchCallout: 'none',
+                }}
+              >
+                <GameCard title={cards[currentCardIndex].title} className="h-full pointer-events-none">
+                  <div className="mb-2 pointer-events-none">
+                    <p className="text-gray-200 mb-1 text-xs pointer-events-none">{cards[currentCardIndex].description}</p>
+                    <div className="space-y-1 pointer-events-none">
+                      <div className="h-1 bg-gray-100 rounded pointer-events-none"></div>
+                      <div className="h-1 bg-gray-100 rounded w-3/4 pointer-events-none"></div>
+                      <div className="h-1 bg-gray-100 rounded w-1/2 pointer-events-none"></div>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-2 pointer-events-none">
+                    <p className="text-gray-200 text-xs pointer-events-none">Difficulty: {cards[currentCardIndex].difficulty}</p>
+                  </div>
+
+                  <div className="bg-gray-700/50 border-gray-600 rounded-lg p-2 flex-1 flex items-center justify-center pointer-events-none">
+                    <span className="text-gray-200 text-xs pointer-events-none">{gameData.story}</span>
+                  </div>
+
+                  {/* Card indicator dots */}
+                  <div className="flex justify-center mt-2 space-x-1 pointer-events-none">
+                    {cards.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`w-1.5 h-1.5 rounded-full transition-colors pointer-events-none ${
+                          index === currentCardIndex ? 'bg-blue-400' : 'bg-gray-500'
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Navigation hints */}
+                  <div className="flex justify-between items-center mt-2 text-xs text-gray-400 pointer-events-none">
+                    <span className={`pointer-events-none ${currentCardIndex > 0 ? 'visible' : 'invisible'}`}>
+                      ← Drag
+                    </span>
+                    <span className="text-center pointer-events-none">
+                      {currentCardIndex + 1} / {cards.length}
+                    </span>
+                    <span className={`pointer-events-none ${currentCardIndex < cards.length - 1 ? 'visible' : 'invisible'}`}>
+                      Drag →
+                    </span>
+                  </div>
+                </GameCard>
+              </div>
             </div>
-          </GameCard>
 
-          <div>
-              <Chatwindow/>
-          </div>
->>>>>>> 56569f9b71e8e8e45d453c1faaed5d2f74420960
-
-              <div className="bg-gray-100 border rounded-lg p-2 flex-1 flex items-center justify-center">
-                <span className="text-gray-500 text-xs">{gameData.story}</span>
-              </div>
-            </GameCard>
-          </div>
-
-          {/* Card Questions - MUTAT în partea de jos stânga */}
-          <div 
-            className="text-xs p-2"
-            style={{
-              gridColumn: '1 / 8',    // Coloanele 1-7
-              gridRow: '20 / 25'      // Liniile 20-24 (jos)
-            }}
-          >
-            <GameCard title="Questions" className="h-full">
-              <div className="space-y-1 text-xs">
-                <p><strong>Hint Question:</strong> 50 coins</p>
-                <p><strong>x2 Questions:</strong> 70 coins</p>
-              </div>
-            </GameCard>
-          </div>
-
-          {/* Card Game Info - MUTAT în partea de jos dreapta */}
-          <div 
-            className="text-xs p-2"
-            style={{
-              gridColumn: '9 / 16',   // Coloanele 9-15
-              gridRow: '20 / 25'      // Liniile 20-24 (jos)
-            }}
-          >
-            <GameCard title="Game Info" className="h-full">
-              <div className="space-y-2 text-xs">
-                <div>
-                  <p><strong>Master:</strong> {gameData.master}</p>
+            {/* Card Questions - MUTAT în partea de jos stânga */}
+            <div 
+              className="text-xs p-1 sm:p-2"
+              style={{
+                gridColumn: '2 / 9',    // Coloanele 1-11
+                gridRow: '16 / 22'      // Liniile 20-25 (jos)
+              }}
+            >
+              <GameCard title="Bonuses" className="h-full">
+                <div className="space-y-1 text-xs">
+                  <p><strong>Hint Question:</strong> 50 coins</p>
+                  <p><strong>x2 Questions:</strong> 70 coins</p>
                 </div>
-                <div>
-                  <p><strong>Players:</strong> {gameData.players.join(', ')}</p>
-                </div>
-                
-                <div className="mt-2">
-                  <button className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs">
-                    Type... →
-                  </button>
-                </div>
-              </div>
-            </GameCard>
-          </div>
+              </GameCard>
+            </div>
 
-          {/* Card suplimentar - MUTAT în mijlocul din dreapta */}
-          <div 
-            className="text-xs p-2"
-            style={{
-              gridColumn: '12 / 16',  // Coloanele 12-15
-              gridRow: '8 / 15'       // Liniile 8-14 (mijloc)
-            }}
-          >
-            <GameCard title="Extra" className="h-full">
-              <div className="text-xs text-gray-600">
-                <p>Card extra pentru demonstrare</p>
-              </div>
-            </GameCard>
+            {/* Card Game Info - MUTAT în partea de jos dreapta */}
+            <div 
+              className="text-xs p-1 sm:p-2"
+              style={{
+                gridColumn: '10 / 17',   // Coloanele 14-25
+                gridRow: '5 / 24'      // Liniile 20-25 (jos)
+              }}
+            >
+              <GameCard title="Game Info" className="h-full">
+                <div className="space-y-2 text-xs">
+                  <div>
+                    <p><strong>Master:</strong> {gameData.master}</p>
+                  </div>
+                  <div>
+                    <p><strong>Players:</strong> {gameData.players.join(', ')}</p>
+                  </div>
+                  
+                  <div className="mt-2">
+                    <button className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs">
+                      Type... →
+                    </button>
+                  </div>
+                </div>
+              </GameCard>
+            </div>
           </div>
-          
         </div>
-
-       
       </div>
-    </div>
   );
 };
 

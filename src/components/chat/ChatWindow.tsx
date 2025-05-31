@@ -10,14 +10,6 @@ const ChatWindow: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isBotTyping, setIsBotTyping] = useState(false);
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-
-  if (!session?.user?.name) {
-    return <div className="p-8 text-center">Te rugăm să te autentifici pentru a folosi chatul.</div>;
-  }
-
   // Adaugă un mesaj inițial de la bot
   useEffect(() => {
     setMessages([
@@ -31,12 +23,16 @@ const ChatWindow: React.FC = () => {
     ]);
   }, []);
 
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
   const handleSendMessage = async (text: string) => {
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       text,
       sender: 'user',
-      username: session.user?.name || 'User',
+      username: session?.user?.name || 'User',
       timestamp: new Date(),
     };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
@@ -72,7 +68,7 @@ const ChatWindow: React.FC = () => {
       <header className="p-4 bg-blue-600 text-white text-center">
         <h1 className="text-xl font-semibold">Chat cu Bot</h1>
       </header>
-      <MessageList messages={messages} currentUsername={session.user.name} />
+      <MessageList messages={messages} currentUsername={session?.user?.name || 'User'} />
       {isBotTyping && <div className="p-2 text-sm text-gray-500 italic text-center">Bot-ul scrie...</div>}
       <MessageInput onSendMessage={handleSendMessage} isSending={isBotTyping} />
     </div>

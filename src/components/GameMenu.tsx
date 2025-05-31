@@ -1,5 +1,6 @@
 // components/GameMenu.tsx
 'use client';
+import ChatWindow from './chat/ChatWindow';
 import React, { useState } from 'react';
 import GameCard from './GameCard';
 import Chatwindow from './chat/ChatWindow';
@@ -72,8 +73,9 @@ const GameMenu: React.FC = () => {
             </div>
           </GameCard>
 
+          {/* Card Master/Players info - Centru jos */}
           <div>
-              <Chatwindow/>
+            <ChatWindow />
           </div>
 
         </div>

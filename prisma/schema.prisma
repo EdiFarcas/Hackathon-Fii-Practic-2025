@@ -43,7 +43,6 @@ model User {
   sessions      Session[]
   gamesHosted   Game[]    @relation("GameHost")
   gamesPlayed   GamePlayer[]
-  storiesAuthored Story[] @relation("StoryAuthor")
   gamesWon      Int       @default(0)
   createdAt     DateTime  @default(now())
 }
@@ -61,7 +60,7 @@ model Game {
   status      GameStatus   @default(WAITING)
   maxPlayers  Int          @default(4)
   currentTurn Int          @default(0)
-  players     GamePlayer[]
+  players     GamePlayer[] // vector de useri prin relație GamePlayer
   questions   Question[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -95,13 +94,11 @@ model Question {
 }
 
 model Story {
-  id              String   @id @default(cuid())
-  title           String
-  description     String
-  authorId        String
-  author          User     @relation("StoryAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 enum GameStatus {

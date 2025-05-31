@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { createStory } from "./homepageServe";
+import { createStory } from "./homepageServe"
 
 export default function MurderMysteryGiveaway() {
   const [activeTab, setActiveTab] = useState("how");
@@ -12,6 +12,8 @@ export default function MurderMysteryGiveaway() {
   const [storyDescription, setStoryDescription] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState("");
+  const [joinGameId, setJoinGameId] = useState("");
+  const [joinError, setJoinError] = useState("");
 
   const handleStartGame = (title: string) => {
     setModalTitle(title);
@@ -26,8 +28,15 @@ export default function MurderMysteryGiveaway() {
     // Your logic for creating a lobby
   };
 
-  const handleJoinLobby = () => {
-    // Your logic for joining a lobby
+  const handleJoinLobby = async () => {
+    setJoinError("");
+    if (!joinGameId.trim()) {
+      setJoinError("Introdu un Game ID valid!");
+      return;
+    }
+    // Aici poți adăuga logica de verificare în DB sau direct conectare la WebSocket
+    // Exemplu: redirect către pagina de game cu id-ul respectiv
+    window.location.href = `/game?gameId=${joinGameId}`;
   };
 
   const openCreateStoryModal = () => {
@@ -280,8 +289,16 @@ export default function MurderMysteryGiveaway() {
             </button>
             <h2 className="text-2xl font-bold text-red-300">{modalTitle}</h2>
             <p className="text-gray-300">
-              Choose how you want to play:
+              Introdu Game ID pentru a te conecta la un lobby:
             </p>
+            <input
+              type="text"
+              value={joinGameId}
+              onChange={e => setJoinGameId(e.target.value)}
+              className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500 w-full"
+              placeholder="Game ID"
+            />
+            {joinError && <p className="text-red-400 font-semibold">{joinError}</p>}
             <div className="flex flex-col gap-4">
               <button
                 onClick={handleCreateLobby}

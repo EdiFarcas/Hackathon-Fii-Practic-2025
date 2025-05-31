@@ -60,7 +60,7 @@ model Game {
   status      GameStatus   @default(WAITING)
   maxPlayers  Int          @default(4)
   currentTurn Int          @default(0)
-  players     GamePlayer[]
+  players     GamePlayer[] // vector de useri prin relație GamePlayer
   questions   Question[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt

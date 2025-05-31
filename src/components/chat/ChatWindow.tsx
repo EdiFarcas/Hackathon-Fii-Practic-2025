@@ -25,7 +25,7 @@ const ChatWindow: React.FC = () => {
       },
     ]);
   }, []);
-
+  
   if (status === "loading") {
     return <div>Loading...</div>;
   }

@@ -71,7 +71,16 @@ const ChatWindow: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-2xl mx-auto border border-gray-300 shadow-lg">
+    <div 
+      className="flex flex-col border border-gray-300 shadow-lg bg-white h-full"
+      style={{
+        position: 'absolute',
+        inset: '0',
+        width: '100%',
+        height: '100%',
+        zIndex: 40,
+      }}
+  >
       <header className="p-4 bg-blue-600 text-white text-center">
         <h1 className="text-xl font-semibold">Chat cu Bot</h1>
       </header>

@@ -1,7 +1,7 @@
 // components/GameMenu.tsx
 'use client';
 import ChatWindow from './chat/ChatWindow';
-import React, { useState, useEffect, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import GameCard from './GameCard';
 import { useGesture } from '@use-gesture/react';
 
@@ -255,35 +255,17 @@ const GameMenu: React.FC = () => {
               </GameCard>
             </div>
 
-            {/* Card Game Info - MUTAT în partea de jos dreapta */}
-            <div 
-              className="text-xs p-1 sm:p-2"
-              style={{
-                gridColumn: '10 / 17',   // Coloanele 14-25
-                gridRow: '5 / 24'      // Liniile 20-25 (jos)
-              }}
-            >
-              <GameCard title="Game Info" className="h-full">
-                <div className="space-y-2 text-xs">
-                  <div>
-                    <p><strong>Master:</strong> {gameData.master}</p>
-                  </div>
-                  <div>
-                    <p><strong>Players:</strong> {gameData.players.join(', ')}</p>
-                  </div>
-                  
-                  <div className="mt-2">
-                    <button className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs">
-                      Type... →
-                    </button>
-                  </div>
-                </div>
-              </GameCard>
-            </div>
-          </GameCard>
-
           {/* Card Master/Players info - Centru jos */}
-          <div>
+          <div 
+            className="text-xs p-1 sm:p-2"
+            style={{
+              gridColumn: '10 / 17',
+              gridRow: '5 / 24',
+              position: 'relative',
+              height: '100%',
+              width: '100%'
+            }}
+          >
             <ChatWindow />
           </div>
 

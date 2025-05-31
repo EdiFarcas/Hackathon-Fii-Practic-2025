@@ -29,10 +29,10 @@ export default function MurderMysteryGiveaway() {
                   : "bg-gray-800 text-red-200 border-2 border-gray-600 hover:border-red-700"
               }`}
             >
-              {tab === "how" && "🕵️ Investigation"}
-              {/* {tab === "lottery" && "🎭 Evidence Weight"}
-              {tab === "entries" && "📋 Case Files"}
-              {tab === "perks" && "👑 Detective Guild"} */}
+              {tab === "how" && "🕵️ How to play"}
+              {tab === "lottery" && "🎭 Stories"}
+              {tab === "entries" && "📋 Create your own story!"}
+              {/* {tab === "perks" && "👑 Detective Guild"} */}
             </button>
           ))}
         </div>
@@ -96,15 +96,15 @@ export default function MurderMysteryGiveaway() {
           {activeTab === "lottery" && (
             <div>
               <h2 className="text-3xl font-bold text-red-200 mb-6 flex items-center">
-                <span className="mr-3">⚖️</span>Evidence Weight System
+                <span className="mr-3">⚖️</span> Dark Stories
               </h2>
-              <p className="text-gray-300 mb-6">Your evidence carries different weight based on accumulation:</p>
+              <p className="text-gray-300 mb-6">Dive into the fantasy of dark stories:</p>
               <div className="space-y-4">
                 {[
-                  { label: "First 100 Evidence Points", value: "Full Weight", percent: 100, icon: "🔍" },
-                  { label: "Next 100 Evidence Points", value: "Half Weight", percent: 50, icon: "🕵️" },
-                  { label: "Next 100 Evidence Points", value: "Quarter Weight", percent: 25, icon: "📋" },
-                  { label: "Beyond 300 Evidence Points", value: "Minimal Weight", percent: 10, icon: "🔬" },
+                  { label: "Jack and Judy are dead", value: "", percent: 100, icon: "🔍" },
+                  { label: "Fatal shot", value: "", percent: 50, icon: "🕵️" },
+                  { label: "Death:delayed", value: "", percent: 25, icon: "📋" },
+                  { label: "Red high heels", value: "", percent: 10, icon: "🔬" },
                 ].map((tier, i) => (
                   <div key={i} className="bg-gray-800/50 p-4 rounded-lg border border-red-900/30">
                     <div className="flex justify-between items-center font-medium text-sm text-gray-300 mb-2">

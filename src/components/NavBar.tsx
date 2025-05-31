@@ -17,8 +17,8 @@ export default function Navbar() {
   useEffect(() => {
     // Când navbar-ul este colapsat, setăm variabila la 4rem, altfel la 16rem.
     document.documentElement.style.setProperty(
-      '--nav-width',
-      isCollapsed ? '4rem' : '16rem'
+      '--nav-height',
+      isCollapsed ? '4rem' : '5rem'
     );
   }, [isCollapsed]);
 
@@ -28,28 +28,28 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed left-0 top-0 h-screen ${
-        isCollapsed ? 'w-16' : 'w-64'
-      } bg-gray-800 text-gray-100 p-4 flex flex-col transition-all duration-300`}
+      className={`fixed top-0 left-0 w-full ${
+        isCollapsed ? 'h-16' : 'h-20'
+      } bg-gray-800 text-gray-100 px-4 py-2 flex items-center transition-all duration-300 z-50`}
     >
       <button
         onClick={toggleCollapse}
-        className="mb-4 p-2 bg-gray-700 rounded"
+        className="mr-4 p-2 bg-gray-700 rounded"
       >
-        {isCollapsed ? "🡲" : "🡰"}
+        {isCollapsed ? "🡳" : "🡱"}
       </button>
 
       {!isCollapsed && (
-        <div className="mb-8">
+        <div className="mr-8">
           <h1 className="text-2xl font-bold">My App</h1>
         </div>
       )}
 
-      <ul className="space-y-2 flex-1">
+      <ul className="flex space-x-4 flex-1">
         <li>
           <Link
             href="/"
-            className={`flex p-2 rounded hover:bg-gray-700 ${pathname === '/' ? 'bg-gray-700' : ''}`}
+            className={`flex items-center p-2 rounded hover:bg-gray-700 ${pathname === '/' ? 'bg-gray-700' : ''}`}
           >
             <span className="mr-2">🏠</span>
             {!isCollapsed && "Home"}
@@ -57,26 +57,16 @@ export default function Navbar() {
         </li>
         <li>
           <Link
-            href="/game"
-            className={`flex p-2 rounded hover:bg-gray-700 ${pathname === '/game' ? 'bg-gray-700' : ''}`}
+            href="/profile"
+            className={`flex items-center p-2 rounded hover:bg-gray-700 ${pathname === '/profile' ? 'bg-gray-700' : ''}`}
           >
-            <span className="mr-2">📊</span>
-            {!isCollapsed && "Game"}
-          </Link>
-        </li>
-        <li>
-          <Link
-            href="/settings"
-            className={`flex p-2 rounded hover:bg-gray-700 ${pathname === '/settings' ? 'bg-gray-700' : ''}`}
-          >
-            <span className="mr-2">⚙️</span>
-            {!isCollapsed && "Settings"}
+            <span className="mr-2">👤</span>
+            {!isCollapsed && "Profile"}
           </Link>
         </li>
       </ul>
 
-      
-      <div className="mt-auto">
+      <div className="ml-auto">
         <AuthButtons/>
       </div>
     </nav>

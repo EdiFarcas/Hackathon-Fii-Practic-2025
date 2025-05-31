@@ -2,6 +2,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import GameCard from './GameCard';
+import Chatwindow from './chat/ChatWindow';
 
 const GameMenu: React.FC = () => {
   const [currentTurn, setCurrentTurn] = useState(5);
@@ -122,6 +123,7 @@ const GameMenu: React.FC = () => {
             </GameCard>
           </div>
 
+<<<<<<< HEAD
           {/* Card Titlu - MUTAT în centru, mai mare */}
           <div 
             className="text-xs p-2"
@@ -143,6 +145,40 @@ const GameMenu: React.FC = () => {
               <div className="mb-2">
                 <p className="text-gray-600 text-xs">Difficulty: Easy/Hard...</p>
               </div>
+=======
+          {/* Card Titlu - Dreapta */}
+          <GameCard title="TITLU" className="lg:col-span-1 lg:row-span-2">
+            <div className="mb-4">
+              <p className="text-gray-600 mb-2">Description ...</p>
+              <div className="space-y-1">
+                <div className="h-2 bg-gray-100 rounded"></div>
+                <div className="h-2 bg-gray-100 rounded w-3/4"></div>
+                <div className="h-2 bg-gray-100 rounded w-1/2"></div>
+              </div>
+            </div>
+            
+            <div className="mb-4">
+              <p className="text-gray-600 mb-2">Difficulty: Easy/Hard...</p>
+            </div>
+
+            {/* Secțiunea Poza */}
+            <div className="bg-gray-100 border rounded-lg p-4 h-32 flex items-center justify-center">
+              <span className="text-gray-500 text-lg">{gameData.story}</span>
+            </div>
+          </GameCard>
+
+          {/* Card Questions - Stânga jos */}
+          <GameCard title="Questions" className="lg:col-span-1">
+            <div className="space-y-2">
+              <p><strong>Hint Question:</strong> 50 coins</p>
+              <p><strong>x2 Questions:</strong> 70 coins</p>
+            </div>
+          </GameCard>
+
+          <div>
+              <Chatwindow/>
+          </div>
+>>>>>>> 56569f9b71e8e8e45d453c1faaed5d2f74420960
 
               <div className="bg-gray-100 border rounded-lg p-2 flex-1 flex items-center justify-center">
                 <span className="text-gray-500 text-xs">{gameData.story}</span>

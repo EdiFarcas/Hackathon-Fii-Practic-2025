@@ -1,7 +1,7 @@
 // import { getServerSession } from "next-auth";
 // import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 // import { db } from "@/lib/db";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 import ProfileClient from "./ProfileClient";
 
 export default async function ProfilePage() {

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import AuthButtons from './AuthButtons';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -39,11 +40,7 @@ export default function Navbar() {
         </li>
       </ul>
 
-      <div className="mt-auto">
-        <button className="w-full p-2 bg-blue-600 hover:bg-blue-700 rounded">
-          Logout
-        </button>
-      </div>
+      <AuthButtons/>
     </nav>
   );
 }

@@ -1,8 +1,11 @@
 // components/GameMenu.tsx
 'use client';
-import React, { useState, useEffect } from 'react';
+import ChatWindow from './chat/ChatWindow';
+import React, { useState, useEffect, useRef, useEffect, useCallback } from 'react';
 import GameCard from './GameCard';
 import { useGesture } from '@use-gesture/react';
+
+const TURN_TIME = 5; // secunde
 
 const GameMenu: React.FC = () => {
   const [currentTurn, setCurrentTurn] = useState(5);
@@ -76,6 +79,32 @@ const GameMenu: React.FC = () => {
   const { colSize, rowSize } = getGridDimensions();
 
   // Exemplu: disponibile date dinamice pentru fiecare card
+  
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Funcție pentru resetarea timerului
+  const resetTurnTimer = useCallback(() => {
+    setCurrentTurn(TURN_TIME);
+  }, []);
+
+  // Timer logic
+  useEffect(() => {
+    if (currentTurn <= 0) return;
+    timerRef.current = setInterval(() => {
+      setCurrentTurn((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current!);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [currentTurn]);
+
+  // Aici vei adăuga mai târziu clasa cu informațiile jocului
   const gameData = {
     players: ['Ariel', 'Marcel', 'Victoria'],
     master: '...',
@@ -251,9 +280,16 @@ const GameMenu: React.FC = () => {
                 </div>
               </GameCard>
             </div>
+          </GameCard>
+
+          {/* Card Master/Players info - Centru jos */}
+          <div>
+            <ChatWindow />
           </div>
+
         </div>
       </div>
+    </div>
   );
 };
 

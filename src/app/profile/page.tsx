@@ -31,9 +31,6 @@ export default async function ProfilePage() {
     email: "user@example.com",
     gamesWon: 42,
   };
-  
-
-  
 
   return (
     <ProfileClient

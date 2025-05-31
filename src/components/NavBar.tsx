@@ -41,7 +41,9 @@ export default function Navbar() {
 
       {!isCollapsed && (
         <div className="mr-8">
-          <h1 className="text-2xl font-bold">My App</h1>
+          <Link href="/" className="text-2xl font-bold hover:underline">
+            Darker Stories
+          </Link>
         </div>
       )}
 

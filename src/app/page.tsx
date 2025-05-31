@@ -19,7 +19,7 @@ export default function MurderMysteryGiveaway() {
 
         {/* Tabs */}
         <div className="flex justify-center mb-8 space-x-4 flex-wrap gap-2">
-          {["how", "lottery", "entries", "perks"].map((tab) => (
+          {["how", "lottery", "entries"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -32,7 +32,6 @@ export default function MurderMysteryGiveaway() {
               {tab === "how" && "🕵️ How to play"}
               {tab === "lottery" && "🎭 Stories"}
               {tab === "entries" && "📋 Create your own story!"}
-              {/* {tab === "perks" && "👑 Detective Guild"} */}
             </button>
           ))}
         </div>
@@ -96,32 +95,56 @@ export default function MurderMysteryGiveaway() {
           {activeTab === "lottery" && (
             <div>
               <h2 className="text-3xl font-bold text-red-200 mb-6 flex items-center">
-                <span className="mr-3">⚖️</span> Dark Stories
+                <span className="mr-3">🎭</span>Dark Stories
               </h2>
               <p className="text-gray-300 mb-6">Dive into the fantasy of dark stories:</p>
               <div className="space-y-4">
-                {[
-                  { label: "Jack and Judy are dead", value: "", percent: 100, icon: "🔍" },
-                  { label: "Fatal shot", value: "", percent: 50, icon: "🕵️" },
-                  { label: "Death:delayed", value: "", percent: 25, icon: "📋" },
-                  { label: "Red high heels", value: "", percent: 10, icon: "🔬" },
-                ].map((tier, i) => (
-                  <div key={i} className="bg-gray-800/50 p-4 rounded-lg border border-red-900/30">
-                    <div className="flex justify-between items-center font-medium text-sm text-gray-300 mb-2">
-                      <span className="flex items-center">
-                        <span className="mr-2 text-lg">{tier.icon}</span>
-                        {tier.label}
-                      </span>
-                      <span className="text-red-300 font-bold">{tier.value}</span>
-                    </div>
-                    <div className="w-full h-4 rounded-full bg-gray-700 overflow-hidden">
-                      <div
-                        className="bg-gradient-to-r from-red-600 to-red-400 h-full transition-all duration-500"
-                        style={{ width: `${tier.percent}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
+                <div className="bg-gray-800/50 p-6 rounded-lg border border-red-900/30 relative">
+                  <button className="absolute top-4 right-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-lg">
+                    Start game
+                  </button>
+                  <h3 className="text-xl font-semibold text-red-300 mb-4 flex items-center pr-24">
+                    <span className="mr-2">🔍</span>Jack and Judy are dead
+                  </h3>
+                  <p className="text-gray-200">
+                        Jack and Judy were lying on the floor dead. There was a puddle of water and broken glass on the floor. How did they die?</p>
+                </div>
+                
+                <div className="bg-gray-800/50 p-6 rounded-lg border border-red-900/30 relative">
+                  <button className="absolute top-4 right-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-lg">
+                    Start game
+                  </button>
+                  <h3 className="text-xl font-semibold text-red-300 mb-4 flex items-center pr-24">
+                    <span className="mr-2">🕵️</span>Fatal shot
+                  </h3>
+                  <p className="text-gray-200">
+                    A hunter aimed his gun carefully and fired. Seconds later, he realized his mistake. Minutes later, he was dead.
+                  </p>
+                </div>
+                
+                <div className="bg-gray-800/50 p-6 rounded-lg border border-red-900/30 relative">
+                  <button className="absolute top-4 right-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-lg">
+                    Start game
+                  </button>
+                  <h3 className="text-xl font-semibold text-red-300 mb-4 flex items-center pr-24">
+                    <span className="mr-2">📋</span>Death: delayed
+                  </h3>
+                  <p className="text-gray-200">
+                    Helen never thought that her decision to travel by plane would save her life.
+                  </p>
+                </div>
+                
+                <div className="bg-gray-800/50 p-6 rounded-lg border border-red-900/30 relative">
+                  <button className="absolute top-4 right-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-lg">
+                    Start game
+                  </button>
+                  <h3 className="text-xl font-semibold text-red-300 mb-4 flex items-center pr-24">
+                    <span className="mr-2">🔬</span>Red high heels
+                  </h3>
+                  <p className="text-gray-200">
+                    A woman buys a new pair of red high heels. Hours later, she dies.
+                  </p>
+                </div>
               </div>
             </div>
           )}
@@ -129,76 +152,36 @@ export default function MurderMysteryGiveaway() {
           {activeTab === "entries" && (
             <div>
               <h2 className="text-3xl font-bold text-red-200 mb-6 flex items-center">
-                <span className="mr-3">📋</span>Case File Scaling
+                <span className="mr-3">📋</span>Create Your Own Story
               </h2>
               <p className="text-lg mb-6 text-gray-300">
-                Entry costs rise as more detectives investigate the same case:
+                Have a mysterious story to share? Create your own Dark Story for others to solve!
               </p>
-              <ul className="list-none space-y-4 text-gray-200">
-                <li className="flex items-start bg-gray-800/30 p-4 rounded-lg border-l-4 border-green-600">
-                  <span className="mr-3 text-2xl">🟢</span>
-                  <div>
-                    <strong className="text-green-400">First 50 investigators:</strong> Standard evidence cost
-                  </div>
-                </li>
-                <li className="flex items-start bg-gray-800/30 p-4 rounded-lg border-l-4 border-yellow-600">
-                  <span className="mr-3 text-2xl">🟡</span>
-                  <div>
-                    <strong className="text-yellow-400">51–100 investigators:</strong> Increased evidence cost
-                  </div>
-                </li>
-                <li className="flex items-start bg-gray-800/30 p-4 rounded-lg border-l-4 border-red-600">
-                  <span className="mr-3 text-2xl">🔴</span>
-                  <div>
-                    <strong className="text-red-400">100+ investigators:</strong> Premium cost + possible evidence burning
-                  </div>
-                </li>
-              </ul>
-              <div className="mt-6 bg-red-900/20 p-6 rounded-lg border border-red-800/50 text-red-200">
-                <div className="flex items-start">
-                  <span className="mr-3 text-2xl">💀</span>
-                  <div>
-                    <strong>High-stakes murder cases</strong> may require sacrificing evidence points for a chance at solving the ultimate mystery.
-                  </div>
+              <div className="space-y-6">
+                <div className="bg-gray-800/50 p-6 rounded-lg border border-red-900/30">
+                  <h3 className="text-xl font-semibold text-red-300 mb-4">Story Creation Guidelines</h3>
+                  <ul className="list-none space-y-3 text-gray-200">
+                    <li className="flex items-start">
+                      <span className="mr-3 text-xl">✍️</span>
+                      <span>Write a mysterious scenario that seems impossible or strange</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-3 text-xl">🧩</span>
+                      <span>Make sure there's a logical solution that can be discovered through yes/no questions</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-3 text-xl">🎯</span>
+                      <span>Test your story with friends to ensure it's solvable but challenging</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="bg-red-900/20 p-6 rounded-lg border border-red-800/50">
+                  <p className="text-red-200">
+                    <strong>Coming Soon:</strong> Story creation form will be available here where you can submit your own Dark Stories for the community to solve!
+                  </p>
                 </div>
               </div>
-            </div>
-          )}
-
-          {activeTab === "perks" && (
-            <div>
-              <h2 className="text-3xl font-bold text-red-200 mb-6 flex items-center">
-                <span className="mr-3">👑</span>Detective Guild Membership
-              </h2>
-              <p className="text-gray-300 mb-6 text-lg">
-                Join the elite Detective Guild for exclusive benefits and automatic evidence rewards.
-              </p>
-              <ul className="list-none space-y-4 text-gray-200">
-                <li className="flex items-start bg-purple-900/20 p-4 rounded-lg border border-purple-800/50">
-                  <span className="mr-3 text-2xl">💎</span>
-                  <div>
-                    <strong className="text-purple-300">Monthly Evidence Drops:</strong> Receive bonus evidence points automatically
-                  </div>
-                </li>
-                <li className="flex items-start bg-blue-900/20 p-4 rounded-lg border border-blue-800/50">
-                  <span className="mr-3 text-2xl">🎫</span>
-                  <div>
-                    <strong className="text-blue-300">Exclusive Cold Cases:</strong> Access to private, high-reward investigations
-                  </div>
-                </li>
-                <li className="flex items-start bg-green-900/20 p-4 rounded-lg border border-green-800/50">
-                  <span className="mr-3 text-2xl">🚀</span>
-                  <div>
-                    <strong className="text-green-300">Support the Guild:</strong> Help expand our detective network and case library
-                  </div>
-                </li>
-              </ul>
-              <a
-                href="#"
-                className="inline-block mt-6 px-8 py-4 rounded-lg bg-gradient-to-r from-red-700 to-red-600 text-white font-bold shadow-lg hover:from-red-600 hover:to-red-500 transition-all duration-300 transform hover:scale-105 border-2 border-red-500"
-              >
-                Join the Detective Guild
-              </a>
             </div>
           )}
         </div>

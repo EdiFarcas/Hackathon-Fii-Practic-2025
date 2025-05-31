@@ -43,6 +43,7 @@ model User {
   sessions      Session[]
   gamesHosted   Game[]    @relation("GameHost")
   gamesPlayed   GamePlayer[]
+  storiesAuthored Story[] @relation("StoryAuthor")
   gamesWon      Int       @default(0)
   createdAt     DateTime  @default(now())
 }
@@ -93,6 +94,16 @@ model Question {
   game       Game         @relation(fields: [gameId], references: [id], onDelete: Cascade)
   askedAt    DateTime     @default(now())
   answeredAt DateTime?
+}
+
+model Story {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  authorId        String
+  author          User     @relation("StoryAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 enum GameStatus {

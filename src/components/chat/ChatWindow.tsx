@@ -71,8 +71,17 @@ const ChatWindow: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-2xl mx-auto border border-gray-300 shadow-lg">
-      <header className="p-4 bg-blue-600 text-white text-center">
+    <div 
+      className="flex flex-col border border-gray-300 shadow-lg bg-white h-full"
+      style={{
+        position: 'absolute',
+        inset: '0',
+        width: '100%',
+        height: '100%',
+        zIndex: 40,
+      }}
+  >
+      <header className="p-4 bg-red-600 text-white text-center">
         <h1 className="text-xl font-semibold">Chat cu Bot</h1>
       </header>
       <MessageList messages={messages} currentUsername={session?.user?.name || 'User'} />
@@ -86,7 +95,7 @@ const ChatWindow: React.FC = () => {
             <h2 className="text-2xl font-bold mb-4 text-green-700">🎉 Congratulations! 🎉</h2>
             <p className="mb-4 text-gray-800">You have solved the mystery!</p>
             <button
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="mt-4 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700"
               onClick={() => router.push("/")}
             >
               Close

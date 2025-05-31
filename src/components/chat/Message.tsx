@@ -15,7 +15,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
       <div
         className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow ${
           isUser
-            ? 'bg-blue-500 text-white'
+            ? 'bg-red-500 text-white'
             : 'bg-gray-200 text-gray-800'
         }`}
       >

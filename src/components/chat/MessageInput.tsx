@@ -24,7 +24,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, isSending })
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}
         placeholder="Scrie un mesaj..."
-        className="flex-grow p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="flex-grow p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-red-500"
         disabled={isSending}
       />
       <button

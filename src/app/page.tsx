@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { createStory } from "./homepageServe";
+import { createStory } from "./homepageServe"
 
 export default function MurderMysteryGiveaway() {
   const [activeTab, setActiveTab] = useState("how");

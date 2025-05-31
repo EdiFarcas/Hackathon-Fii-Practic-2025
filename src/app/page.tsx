@@ -30,9 +30,9 @@ export default function MurderMysteryGiveaway() {
               }`}
             >
               {tab === "how" && "🕵️ Investigation"}
-              {tab === "lottery" && "🎭 Evidence Weight"}
+              {/* {tab === "lottery" && "🎭 Evidence Weight"}
               {tab === "entries" && "📋 Case Files"}
-              {tab === "perks" && "👑 Detective Guild"}
+              {tab === "perks" && "👑 Detective Guild"} */}
             </button>
           ))}
         </div>

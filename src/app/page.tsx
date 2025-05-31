@@ -42,26 +42,54 @@ export default function MurderMysteryGiveaway() {
           {activeTab === "how" && (
             <div>
               <h2 className="text-3xl font-bold text-red-200 mb-6 flex items-center">
-                <span className="mr-3">🔍</span>How to Investigate
+                <span className="mr-3">🔍</span>How to Play Dark Stories
               </h2>
-              <ol className="list-decimal pl-8 space-y-4 text-gray-200 text-lg">
-                <li className="flex items-start">
-                  <span className="mr-3 text-2xl">🕵️</span>
-                  <span>Participate in murder mystery games to earn <strong className="text-red-300">Evidence Points</strong>.</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-3 text-2xl">🎁</span>
-                  <span>Spend Evidence Points to enter exclusive detective giveaways.</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-3 text-2xl">⚖️</span>
-                  <span>Entry costs increase as more detectives join the case.</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-3 text-2xl">🔥</span>
-                  <span>Premium cases may require burning evidence for exclusive rewards.</span>
-                </li>
-              </ol>
+              <div className="space-y-6">
+                <div className="bg-gray-800/50 p-4 rounded-lg border border-red-900/30">
+                  <h3 className="text-xl font-semibold text-red-300 mb-3 flex items-center">
+                    <span className="mr-2">📖</span>Game Overview
+                  </h3>
+                  <p className="text-gray-200">
+                    Dark Stories are mysterious riddles where you're given a strange, often macabre scenario. 
+                    Your job is to uncover the hidden truth by asking only <strong className="text-red-300">YES or NO questions</strong>.
+                  </p>
+                </div>
+                
+                <ol className="list-decimal pl-8 space-y-4 text-gray-200 text-lg">
+                  <li className="flex items-start">
+                    <span className="mr-3 text-2xl">🎭</span>
+                    <span>A <strong className="text-red-300">Story Master</strong> reads a mysterious scenario (like "A man lives on the 20th floor but only takes the elevator to the 10th floor, then walks the rest")</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-3 text-2xl">❓</span>
+                    <span>Players ask <strong className="text-red-300">YES/NO questions only</strong> to gather clues and piece together the truth</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-3 text-2xl">🧩</span>
+                    <span>Use <strong className="text-red-300">lateral thinking</strong> - the solution often involves an unexpected twist or hidden detail</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-3 text-2xl">💡</span>
+                    <span>The first player to <strong className="text-red-300">solve the mystery completely</strong> wins and earns Evidence Points</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-3 text-2xl">⏱️</span>
+                    <span>Some stories have <strong className="text-red-300">time limits</strong> - solve faster for bonus points!</span>
+                  </li>
+                </ol>
+
+                <div className="bg-red-900/20 p-4 rounded-lg border border-red-800/50">
+                  <h4 className="text-lg font-semibold text-red-300 mb-2 flex items-center">
+                    <span className="mr-2">💀</span>Example Dark Story
+                  </h4>
+                  <p className="text-gray-200 italic mb-2">
+                    "A woman enters a room, screams, and immediately knows her husband is dead. How?"
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    Players must ask questions like "Was she at home?", "Did she see the body?", "Was there a phone call?" to uncover the solution.
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 

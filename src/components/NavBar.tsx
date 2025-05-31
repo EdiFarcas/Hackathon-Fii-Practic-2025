@@ -75,11 +75,9 @@ export default function Navbar() {
         </li>
       </ul>
 
-      <AuthButtons/>
+      
       <div className="mt-auto">
-        <button className="w-full p-2 bg-blue-600 hover:bg-blue-700 rounded">
-          {!isCollapsed ? "Logout" : "🚪"}
-        </button>
+        <AuthButtons/>
       </div>
     </nav>
   );

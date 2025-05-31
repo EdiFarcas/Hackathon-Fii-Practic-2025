@@ -19,6 +19,9 @@ export const openrouterChatbotService = async (userMessage: string): Promise<str
     }),
   });
 
+  if (response.status === 429) {
+    throw new Error('You are sending messages too quickly or have reached the free tier limit. Please wait a minute and try again.');
+  }
   if (!response.ok) {
     throw new Error('Failed to fetch from LLama AI');
   }

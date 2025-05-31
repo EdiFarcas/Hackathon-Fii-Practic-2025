@@ -15,7 +15,7 @@ export default function RootLayout({
           <Navbar />
 
           {/* Padding to push content below navbar */}
-          <main className="pt-16 px-4">
+          <main className="pt-16">
             {children}
           </main>
         </Providers>

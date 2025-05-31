@@ -1,9 +1,97 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { createStory } from "./homepageServe"
+import { io, Socket } from "socket.io-client";
 
 export default function MurderMysteryGiveaway() {
   const [activeTab, setActiveTab] = useState("how");
+  const [showModal, setShowModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [showCreateStoryModal, setShowCreateStoryModal] = useState(false);
+  const [storyTitle, setStoryTitle] = useState("");
+  const [storyDescription, setStoryDescription] = useState("");
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishError, setPublishError] = useState("");
+  const [joinGameId, setJoinGameId] = useState("");
+  const [joinError, setJoinError] = useState("");
+  const socketRef = useRef<Socket | null>(null);
+  const [sharedValue, setSharedValue] = useState("");
+
+  const handleStartGame = (title: string) => {
+    setModalTitle(title);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const handleCreateLobby = () => {
+    // Your logic for creating a lobby
+  };
+
+  const handleJoinLobby = async () => {
+    setJoinError("");
+    if (!joinGameId.trim()) {
+      setJoinError("Introdu un Game ID valid!");
+      return;
+    }
+    // Aici poți adăuga logica de verificare în DB sau direct conectare la WebSocket
+    // Exemplu: redirect către pagina de game cu id-ul respectiv
+    window.location.href = `/game?gameId=${joinGameId}`;
+  };
+
+  const openCreateStoryModal = () => {
+    setShowCreateStoryModal(true);
+    setStoryTitle("");
+    setStoryDescription("");
+    setPublishError("");
+  };
+
+  const closeCreateStoryModal = () => {
+    setShowCreateStoryModal(false);
+  };
+
+  const handlePublishStory = async () => {
+    setIsPublishing(true);
+    setPublishError("");
+    try {
+      // Folosește apel server action, nu fetch
+      await createStory({ title: storyTitle, description: storyDescription });
+      setShowCreateStoryModal(false);
+    } catch {
+      setPublishError("Eroare la publicare. Încearcă din nou.");
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
+  // Conectare la WebSocket și join room după Game ID
+  useEffect(() => {
+    if (!joinGameId) return;
+    if (!socketRef.current) {
+      socketRef.current = io("http://localhost:3001");
+    }
+    const socket = socketRef.current;
+    if (!socket) return;
+    socket.emit("join-room", joinGameId);
+    const handleServerUpdate = (data: string) => {
+      setSharedValue(data);
+    };
+    socket.on("server-update", handleServerUpdate);
+    return () => {
+      socket.off("server-update", handleServerUpdate);
+    };
+  }, [joinGameId]);
+
+  // Trimite update la ceilalți când se schimbă valoarea
+  const handleSharedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSharedValue(e.target.value);
+    if (socketRef.current && joinGameId) {
+      socketRef.current.emit("client-update", { roomId: joinGameId, data: e.target.value });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-950 via-gray-900 to-black py-12 px-4 sm:px-6 lg:px-8 font-serif text-white">
@@ -100,7 +188,10 @@ export default function MurderMysteryGiveaway() {
               <p className="text-gray-300 mb-6">Dive into the fantasy of dark stories:</p>
               <div className="space-y-4">
                 <div className="bg-gray-800/50 p-6 rounded-lg border border-red-900/30 relative">
-                  <button className="absolute top-4 right-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-lg">
+                  <button
+                    onClick={() => handleStartGame("Jack and Judy are dead")} // <-- change title per story
+                    className="absolute top-4 right-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-lg"
+                  >
                     Start game
                   </button>
                   <h3 className="text-xl font-semibold text-red-300 mb-4 flex items-center pr-24">
@@ -111,7 +202,10 @@ export default function MurderMysteryGiveaway() {
                 </div>
                 
                 <div className="bg-gray-800/50 p-6 rounded-lg border border-red-900/30 relative">
-                  <button className="absolute top-4 right-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-lg">
+                  <button
+                    onClick={() => handleStartGame("Fatal shot")} // <-- change title per story
+                    className="absolute top-4 right-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-lg"
+                  >
                     Start game
                   </button>
                   <h3 className="text-xl font-semibold text-red-300 mb-4 flex items-center pr-24">
@@ -123,7 +217,10 @@ export default function MurderMysteryGiveaway() {
                 </div>
                 
                 <div className="bg-gray-800/50 p-6 rounded-lg border border-red-900/30 relative">
-                  <button className="absolute top-4 right-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-lg">
+                  <button
+                    onClick={() => handleStartGame("Death: delayed")} // <-- change title per story
+                    className="absolute top-4 right-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-lg"
+                  >
                     Start game
                   </button>
                   <h3 className="text-xl font-semibold text-red-300 mb-4 flex items-center pr-24">
@@ -135,7 +232,10 @@ export default function MurderMysteryGiveaway() {
                 </div>
                 
                 <div className="bg-gray-800/50 p-6 rounded-lg border border-red-900/30 relative">
-                  <button className="absolute top-4 right-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-lg">
+                  <button
+                    onClick={() => handleStartGame("Red high heels")} // <-- change title per story
+                    className="absolute top-4 right-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-lg"
+                  >
                     Start game
                   </button>
                   <h3 className="text-xl font-semibold text-red-300 mb-4 flex items-center pr-24">
@@ -176,10 +276,16 @@ export default function MurderMysteryGiveaway() {
                   </ul>
                 </div>
                 
-                <div className="bg-red-900/20 p-6 rounded-lg border border-red-800/50">
+                <div className="bg-red-900/20 p-6 rounded-lg border border-red-800/50 flex flex-col gap-4">
                   <p className="text-red-200">
                     <strong>Coming Soon:</strong> Story creation form will be available here where you can submit your own Dark Stories for the community to solve!
                   </p>
+                  <button
+                    onClick={openCreateStoryModal}
+                    className="bg-red-700 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-xl text-lg transition-all self-start"
+                  >
+                    ✍️ Create Story
+                  </button>
                 </div>
               </div>
             </div>
@@ -199,6 +305,95 @@ export default function MurderMysteryGiveaway() {
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-transparent backdrop-blur-lg z-50 flex items-center justify-center">
+          <div className="bg-gray-900 p-8 rounded-2xl border-2 border-red-700 max-w-lg w-full relative text-white text-center space-y-6">
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 text-red-300 hover:text-white text-xl font-bold"
+            >
+              ✖
+            </button>
+            <h2 className="text-2xl font-bold text-red-300">{modalTitle}</h2>
+            <p className="text-gray-300">
+              Introdu Game ID pentru a te conecta la un lobby:
+            </p>
+            <input
+              type="text"
+              value={joinGameId}
+              onChange={e => setJoinGameId(e.target.value)}
+              className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500 w-full"
+              placeholder="Game ID"
+            />
+            {/* Exemplu input sincronizat real-time */}
+            {joinGameId && (
+              <input
+                value={sharedValue}
+                onChange={handleSharedChange}
+                placeholder="Acest input e sincronizat la toți userii din același Game ID!"
+                className="p-2 border rounded mt-4 w-full text-black"
+              />
+            )}
+            {joinError && <p className="text-red-400 font-semibold">{joinError}</p>}
+            <div className="flex flex-col gap-4">
+              <button
+                onClick={handleCreateLobby}
+                className="bg-red-600 hover:bg-red-500 text-white font-bold py-4 px-6 rounded-xl text-xl transition-all"
+              >
+                🔧 Create Lobby
+              </button>
+              <button
+                onClick={handleJoinLobby}
+                className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-6 rounded-xl text-xl transition-all"
+              >
+                🔑 Join Lobby
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal pentru crearea unei povești */}
+      {showCreateStoryModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-lg z-50 flex items-center justify-center">
+          <div className="bg-gray-900 p-8 rounded-2xl border-2 border-red-700 max-w-lg w-full relative text-white text-center space-y-6">
+            <button
+              onClick={closeCreateStoryModal}
+              className="absolute top-4 right-4 text-red-300 hover:text-white text-xl font-bold"
+            >
+              ✖
+            </button>
+            <h2 className="text-2xl font-bold text-red-300 mb-4">Creează o poveste nouă</h2>
+            <div className="flex flex-col gap-4 text-left">
+              <label className="font-semibold text-red-200">Titlu</label>
+              <input
+                type="text"
+                value={storyTitle}
+                onChange={e => setStoryTitle(e.target.value)}
+                className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="Titlul poveștii"
+              />
+              <label className="font-semibold text-red-200 mt-2">Descriere</label>
+              <textarea
+                value={storyDescription}
+                onChange={e => setStoryDescription(e.target.value)}
+                className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500 min-h-[100px]"
+                placeholder="Descrierea poveștii"
+              />
+            </div>
+            {publishError && <p className="text-red-400 font-semibold">{publishError}</p>}
+            <button
+              onClick={handlePublishStory}
+              disabled={isPublishing || !storyTitle.trim() || !storyDescription.trim()}
+              className={`bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-xl text-lg transition-all ${isPublishing ? 'opacity-60 cursor-not-allowed' : ''}`}
+            >
+              {isPublishing ? 'Se publică...' : '📢 Publish Story'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

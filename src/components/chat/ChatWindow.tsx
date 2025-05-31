@@ -18,7 +18,7 @@ const ChatWindow: React.FC = () => {
     setMessages([
       {
         id: 'initial-bot-message',
-        text: 'Salut! Sunt Chatbot-ul tău. Cum te pot ajuta?',
+        text: 'Hello! I am your Master. Ask me a Yes/No question about the story, and I will answer you.',
         sender: 'bot',
         username: 'Master',
         timestamp: new Date(),
@@ -29,20 +29,27 @@ const ChatWindow: React.FC = () => {
   if (status === "loading") {
     return <div>Loading...</div>;
   }
-
   const handleSendMessage = async (text: string) => {
+    const username = session?.user?.name || 'User';
+    console.log('Current user:', username); // Debug log
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       text,
       sender: 'user',
-      username: session?.user?.name || 'User',
+      username: username,
       timestamp: new Date(),
     };
+    // Adaugă mesajul userului la istoric
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setIsBotTyping(true);
 
     try {
-      const botResponseText = await openrouterChatbotService(text);
+      // Transformă istoricul în formatul cerut de OpenRouter
+      const messageHistory = [...messages, userMessage].map((msg) => ({
+        role: msg.sender === 'bot' ? 'assistant' : 'user',
+        content: msg.text,
+      }));
+      const botResponseText = await openrouterChatbotService(text, messageHistory);
       
       if (botResponseText.includes("Congratulations, you found the solution!")) {
         setShowWinModal(true);
@@ -59,7 +66,7 @@ const ChatWindow: React.FC = () => {
       console.error("Error getting response from bot:", error);
       const errorMessage: ChatMessage = {
         id: `error-${Date.now()}`,
-        text: "Oops, a apărut o eroare la comunicarea cu bot-ul.",
+        text: "Oops, there was an error while chatting with AI.",
         sender: 'bot',
         username: 'Error',
         timestamp: new Date(),
@@ -68,15 +75,20 @@ const ChatWindow: React.FC = () => {
     } finally {
       setIsBotTyping(false);
     }
-  };
-
-  return (
-    <div className="flex flex-col h-screen max-w-2xl mx-auto border border-gray-300 shadow-lg">
-      <header className="p-4 bg-blue-600 text-white text-center">
-        <h1 className="text-xl font-semibold">Chat cu Bot</h1>
+  };  return (    <div 
+      className="flex flex-col border-3 border-red-600/70 shadow-lg h-full bg-neutral-600/40 backdrop-blur-sm"
+      style={{
+        position: 'absolute',
+        inset: '0',
+        width: '100%',
+        height: '100%',
+        zIndex: 40,
+      }}
+  >      <header className="p-4 bg-red-600/70 backdrop-blur-sm text-white text-center">
+        <h1 className="text-xl font-semibold">Master's hints</h1>
       </header>
       <MessageList messages={messages} currentUsername={session?.user?.name || 'User'} />
-      {isBotTyping && <div className="p-2 text-sm text-gray-500 italic text-center">Bot-ul scrie...</div>}
+      {isBotTyping && <div className="p-2 text-sm text-gray-500 italic text-center">The Master is answearing...</div>}
       <MessageInput onSendMessage={handleSendMessage} isSending={isBotTyping} />
 
       {/* Modal de câștig */}
@@ -86,7 +98,7 @@ const ChatWindow: React.FC = () => {
             <h2 className="text-2xl font-bold mb-4 text-green-700">🎉 Congratulations! 🎉</h2>
             <p className="mb-4 text-gray-800">You have solved the mystery!</p>
             <button
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="mt-4 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700"
               onClick={() => router.push("/")}
             >
               Close

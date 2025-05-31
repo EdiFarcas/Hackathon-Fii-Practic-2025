@@ -4,73 +4,75 @@ interface User {
   name: string;
   email: string;
   gamesWon: number;
+  plan?: string;
 }
 
 export default function ProfileClient({ user }: { user: User }) {
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-700 py-12 px-4 sm:px-6 lg:px-8 text-white">
-      <div className="max-w-3xl mx-auto">
-        <div className="rounded-3xl shadow-xl overflow-hidden bg-gray-800 border-4 border-gray-700">
+    <div className="min-h-screen bg-gradient-to-br from-red-950 via-gray-900 to-black py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center font-serif text-white">
+      <div className="max-w-3xl w-full mx-auto">
+        <div className="rounded-3xl shadow-2xl overflow-hidden border border-red-800/40 bg-gray-900/80 backdrop-blur-lg backdrop-saturate-150 transition-all duration-300">
           {/* Profile Header */}
-          <div className="bg-gradient-to-r from-gray-700 to-gray-900 p-6 flex items-center space-x-4">
-            <div className="h-16 w-16 bg-gray-100 rounded-full shadow-lg flex items-center justify-center">
-              <span className="text-3xl font-bold text-gray-900">
+          <div className="bg-gradient-to-r from-red-900/40 via-gray-900/60 to-black/0 p-8 flex items-center space-x-6 border-b border-red-900/30">
+            <div className="h-20 w-20 bg-gray-900/70 rounded-full shadow-xl flex items-center justify-center border-4 border-red-900/40 backdrop-blur-md">
+              <span className="text-4xl font-extrabold text-red-300 drop-shadow-lg">
                 {user.name?.[0]?.toUpperCase() || "U"}
               </span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white drop-shadow">{user.name}</h1>
-              {/* <p className="text-gray-400 italic">🌟 Premium Member</p> */}
+              <h1 className="text-3xl font-extrabold text-red-200 drop-shadow">{user.name}</h1>
+              {user.plan && (
+                <p className="text-blue-300 italic mt-1 flex items-center gap-2">
+                  <span className="text-lg">💼</span> {user.plan}
+                </p>
+              )}
             </div>
           </div>
 
           {/* Profile Info & Wallet */}
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Info Block */}
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {([
                   ["👤", "Shadow Name", user.name],
                   ["📧", "The Lost Letter", user.email],
                 ] as [string, string, string | undefined][]).map(([icon, label, value], index) => (
                   <div
                     key={index}
-                    className="flex items-center space-x-3 p-3 bg-gray-700 border border-gray-600 rounded-xl shadow-sm"
+                    className="flex items-center space-x-4 p-4 bg-gray-800/60 border border-red-900/30 rounded-2xl shadow-md backdrop-blur-md"
                   >
-                    <span className="text-xl">{icon}</span>
+                    <span className="text-2xl">{icon}</span>
                     <div>
-                      <p className="text-sm text-gray-300">{label}</p>
-                      <p className="font-medium text-gray-100">{value || "—"}</p>
+                      <p className="text-xs text-red-300 font-semibold">{label}</p>
+                      <p className="font-semibold text-red-100 text-lg">{value || "—"}</p>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* Wallet */}
-              <div className="bg-gray-700 border border-gray-600 rounded-2xl p-5 shadow-inner">
+              <div className="bg-gray-800/60 border border-red-900/30 rounded-2xl p-6 shadow-lg backdrop-blur-md flex flex-col justify-center">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-300 mb-1">Stats</p>
+                    <p className="text-xs text-red-300 mb-1 font-semibold">Stats</p>
                     <div className="flex items-baseline space-x-2">
-                      <span className="text-lg">💰</span>
-                      <span className="text-2xl font-bold text-white">{user.gamesWon}</span>
+                      <span className="text-2xl">🏆</span>
+                      <span className="text-3xl font-extrabold text-red-200">{user.gamesWon}</span>
                     </div>
                   </div>
-                  {/* <button className="bg-white text-black px-4 py-2 rounded-xl hover:bg-gray-200 transition-all shadow-md font-semibold">
-                    Add Coins
-                  </button> */}
                 </div>
               </div>
             </div>
 
             {/* Achievements */}
-            <div className="mt-10 pt-6 border-t border-gray-600">
-              <h3 className="text-xl font-bold mb-4 flex items-center text-white">
-                <span className="text-2xl mr-2">⭐</span>
+            <div className="mt-12 pt-8 border-t border-red-900/30">
+              <h3 className="text-2xl font-extrabold mb-6 flex items-center text-red-200">
+                <span className="text-3xl mr-3">⭐</span>
                 Dark Trophies
               </h3>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-6">
                 {[
                   ["0", "Unraveled Stories"],
                   ["12", "Nights in the Dark"],
@@ -78,10 +80,10 @@ export default function ProfileClient({ user }: { user: User }) {
                 ].map(([value, label], idx) => (
                   <div
                     key={idx}
-                    className="text-center p-4 bg-gray-700 rounded-xl shadow-sm border border-gray-600"
+                    className="text-center p-6 bg-gray-800/60 rounded-2xl shadow-md border border-red-900/30 backdrop-blur-md"
                   >
-                    <div className="text-2xl font-bold text-white">{value}</div>
-                    <div className="text-sm text-gray-300">{label}</div>
+                    <div className="text-3xl font-extrabold text-red-200">{value}</div>
+                    <div className="text-sm text-red-300 font-semibold">{label}</div>
                   </div>
                 ))}
               </div>

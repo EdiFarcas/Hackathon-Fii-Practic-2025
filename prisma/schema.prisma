@@ -41,34 +41,35 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  gamesHosted   Game[]    @relation("GameHost")
-  gamesPlayed   GamePlayer[]
+  gamesHosted   Game[]    @relation("GameHost")  gamesPlayed   GamePlayer[]
   gamesWon      Int       @default(0)
+  coins         Int       @default(0)
   createdAt     DateTime  @default(now())
 }
 
 model Game {
   id          String       @id @default(cuid())
-  title       String
-  description String
-  scenario    String       // AI-generated scenario
-  solution    String       // The correct solution
-  suspects    Json         // Array of suspects with details
-  clues       Json         // Available clues
-  hostId      String
-  host        User         @relation("GameHost", fields: [hostId], references: [id])
-  status      GameStatus   @default(WAITING)
-  maxPlayers  Int          @default(4)
-  currentTurn Int          @default(0)
-  players     GamePlayer[]
+  title       String?
+  description String?
+  scenario    String?      // AI-generated scenario
+  solution    String?      // The correct solution
+  suspects    Json?
+  clues       Json?
+  hostId      String?
+  host        User?        @relation("GameHost", fields: [hostId], references: [id])
+  status      GameStatus?  @default(WAITING)
+  maxPlayers  Int?         @default(4)
+  currentTurn Int?         @default(0)
+  players     GamePlayer[] // vector de useri prin relație GamePlayer
   questions   Question[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime?    @default(now())
+  updatedAt   DateTime?    @updatedAt
 }
 
 model GamePlayer {
   id       String @id @default(cuid())
   gameId   String
+  playerName String
   userId   String
   game     Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -91,6 +92,14 @@ model Question {
   game       Game         @relation(fields: [gameId], references: [id], onDelete: Cascade)
   askedAt    DateTime     @default(now())
   answeredAt DateTime?
+}
+
+model Story {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 enum GameStatus {

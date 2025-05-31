@@ -7,16 +7,15 @@ interface MessageItemProps {
   currentUsername: string;
 }
 
-const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
-  const isUser = message.sender === 'user';
+const MessageItem: React.FC<MessageItemProps> = ({ message, currentUsername }) => {
+  const isUser = message.sender === 'user' && message.username === currentUsername;
 
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-2`}>
-      <div
-        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow ${
+      <div        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow ${
           isUser
-            ? 'bg-blue-500 text-white'
-            : 'bg-gray-200 text-gray-800'
+            ? 'bg-red-500/70 text-white backdrop-blur-sm'
+            : 'bg-gray-200/70 text-white backdrop-blur-sm'
         }`}
       >
         <div className="font-bold text-xs mb-1">{message.username}</div>

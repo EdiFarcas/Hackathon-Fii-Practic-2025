@@ -50,7 +50,7 @@ export default function MurderMysteryGiveaway() {
                   </h3>
                   <p className="text-gray-200">
                     Dark Stories are mysterious riddles where you&#39;re given a strange, often macabre scenario. 
-                    Your job is to uncover the hidden truth by asking only <strong className="text-red-300">YES or NO questions</strong>.
+                    Your job is to uncover the hidden truth by asking <strong className="text-red-300">questions to the Master</strong>.
                   </p>
                 </div>
                 
@@ -61,7 +61,7 @@ export default function MurderMysteryGiveaway() {
                   </li>
                   <li className="flex items-start">
                     <span className="mr-3 text-2xl">❓</span>
-                    <span>Players ask <strong className="text-red-300">YES/NO questions only</strong> to gather clues and piece together the truth</span>
+                    <span>Players ask <strong className="text-red-300"> questions only</strong> to gather clues and piece together the truth</span>
                   </li>
                   <li className="flex items-start">
                     <span className="mr-3 text-2xl">🧩</span>

@@ -1,22 +1,17 @@
-import { Server } from "socket.io";
+/* eslint-disable @typescript-eslint/no-require-imports */
+const { Server } = require("socket.io");
 
 const io = new Server(3001, {
   cors: { origin: "*" }
 });
 
 io.on("connection", (socket) => {
-  socket.on("join-game", ({ gameId, userId }) => {
-    socket.join(gameId);
-    io.to(gameId).emit("player-joined", { userId });
+  socket.on("join-room", (roomId) => {
+    socket.join(roomId);
   });
 
-  socket.on("player-action", ({ gameId, action }) => {
-    io.to(gameId).emit("action-update", action);
-  });
-
-  socket.on("leave-game", ({ gameId, userId }) => {
-    socket.leave(gameId);
-    io.to(gameId).emit("player-left", { userId });
+  socket.on("client-update", ({ roomId, data }) => {
+    socket.to(roomId).emit("server-update", data);
   });
 });
 

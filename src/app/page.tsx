@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createStory } from "./homepageServe"
+import { io, Socket } from "socket.io-client";
 
 export default function MurderMysteryGiveaway() {
   const [activeTab, setActiveTab] = useState("how");
@@ -14,6 +15,8 @@ export default function MurderMysteryGiveaway() {
   const [publishError, setPublishError] = useState("");
   const [joinGameId, setJoinGameId] = useState("");
   const [joinError, setJoinError] = useState("");
+  const socketRef = useRef<Socket | null>(null);
+  const [sharedValue, setSharedValue] = useState("");
 
   const handleStartGame = (title: string) => {
     setModalTitle(title);
@@ -61,6 +64,32 @@ export default function MurderMysteryGiveaway() {
       setPublishError("Eroare la publicare. Încearcă din nou.");
     } finally {
       setIsPublishing(false);
+    }
+  };
+
+  // Conectare la WebSocket și join room după Game ID
+  useEffect(() => {
+    if (!joinGameId) return;
+    if (!socketRef.current) {
+      socketRef.current = io("http://localhost:3001");
+    }
+    const socket = socketRef.current;
+    if (!socket) return;
+    socket.emit("join-room", joinGameId);
+    const handleServerUpdate = (data: string) => {
+      setSharedValue(data);
+    };
+    socket.on("server-update", handleServerUpdate);
+    return () => {
+      socket.off("server-update", handleServerUpdate);
+    };
+  }, [joinGameId]);
+
+  // Trimite update la ceilalți când se schimbă valoarea
+  const handleSharedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSharedValue(e.target.value);
+    if (socketRef.current && joinGameId) {
+      socketRef.current.emit("client-update", { roomId: joinGameId, data: e.target.value });
     }
   };
 
@@ -298,6 +327,15 @@ export default function MurderMysteryGiveaway() {
               className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500 w-full"
               placeholder="Game ID"
             />
+            {/* Exemplu input sincronizat real-time */}
+            {joinGameId && (
+              <input
+                value={sharedValue}
+                onChange={handleSharedChange}
+                placeholder="Acest input e sincronizat la toți userii din același Game ID!"
+                className="p-2 border rounded mt-4 w-full text-black"
+              />
+            )}
             {joinError && <p className="text-red-400 font-semibold">{joinError}</p>}
             <div className="flex flex-col gap-4">
               <button

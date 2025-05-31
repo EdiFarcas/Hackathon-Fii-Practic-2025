@@ -49,21 +49,21 @@ model User {
 
 model Game {
   id          String       @id @default(cuid())
-  title       String
-  description String
-  scenario    String       // AI-generated scenario
-  solution    String       // The correct solution
-  suspects    Json         // Array of suspects with details
-  clues       Json         // Available clues
-  hostId      String
-  host        User         @relation("GameHost", fields: [hostId], references: [id])
-  status      GameStatus   @default(WAITING)
-  maxPlayers  Int          @default(4)
-  currentTurn Int          @default(0)
+  title       String?
+  description String?
+  scenario    String?      // AI-generated scenario
+  solution    String?      // The correct solution
+  suspects    Json?
+  clues       Json?
+  hostId      String?
+  host        User?        @relation("GameHost", fields: [hostId], references: [id])
+  status      GameStatus?  @default(WAITING)
+  maxPlayers  Int?         @default(4)
+  currentTurn Int?         @default(0)
   players     GamePlayer[] // vector de useri prin relație GamePlayer
   questions   Question[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime?    @default(now())
+  updatedAt   DateTime?    @updatedAt
 }
 
 model GamePlayer {

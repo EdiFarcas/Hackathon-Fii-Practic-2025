@@ -138,7 +138,7 @@ export default function MurderMysteryGiveaway() {
                   </h3>
                   <p className="text-gray-200">
                     Dark Stories are mysterious riddles where you&#39;re given a strange, often macabre scenario. 
-                    Your job is to uncover the hidden truth by asking <strong className="text-red-300">questions to the Master</strong>.
+                    Your job is to uncover the hidden truth by asking <strong className="text-red-300"> questions to the Master</strong>.
                   </p>
                 </div>
                 

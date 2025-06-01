@@ -129,7 +129,7 @@ export default function MurderMysteryGiveaway() {
         <div className="text-center mb-12 relative">
           <div className="absolute inset-0 bg-red-900/20 blur-3xl rounded-full"></div>
           <h1 className="text-4xl sm:text-5xl font-bold mb-2 text-red-200 drop-shadow-lg relative z-10">
-            🔍 Detective&#39;s Evidence Vault
+            🔍 Murder Mystery
           </h1>
           <p className="text-lg text-gray-300 relative z-10">Solve mysteries, collect clues, win rewards</p>
         </div>

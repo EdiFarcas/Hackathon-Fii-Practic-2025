@@ -33,12 +33,9 @@ const GameMenu: React.FC = () => {
     const s = io('http://localhost:4000');
     setSocket(s);
 
-    // Get user info from session or prompt for name
-    const userName = session?.user?.name || prompt('Enter your name:');
-    if (!userName) {
-      setError('Name is required to join the game');
-      return;
-    }
+    // DROPDOWN FOR USERNAME REMOVED/COMMENTED OUT - always use session user's name
+    // const userName = session?.user?.name || prompt('Enter your name:');
+    const userName = session?.user?.name || 'Unknown';
 
     const user: User = {
       id: (session?.user as { id?: string })?.id || `temp-${Date.now()}`,
@@ -191,9 +188,12 @@ const GameMenu: React.FC = () => {
           >              
             <GameCard title="Players" className="h-full">
               <ul className="space-y-2 text-base">
-                {gameData.players.map((player, index) => (
-                  <li key={index} className="text-white truncate text-center">{player}</li>
-                ))}
+                {(gameState?.users && gameState.users.length > 0
+                  ? gameState.users.map((player, index) => (
+                      <li key={player.id || index} className="text-white truncate text-center">{player.name}</li>
+                    ))
+                  : [<li key="none" className="text-white text-center italic">No players</li>]
+                )}
               </ul>
             </GameCard>
           </div>

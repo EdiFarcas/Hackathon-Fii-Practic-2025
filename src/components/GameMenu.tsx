@@ -30,7 +30,7 @@ const GameMenu: React.FC = () => {
   useEffect(() => {
     if (!gameId) return;
 
-    const s = io('http://localhost:4000');
+    const s = io(process.env.NEXT_PUBLIC_SOCKET_URL);
     setSocket(s);
 
     // DROPDOWN FOR USERNAME REMOVED/COMMENTED OUT - always use session user's name

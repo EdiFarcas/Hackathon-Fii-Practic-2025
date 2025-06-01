@@ -152,7 +152,7 @@ io.on("connection", (socket) => {
         id: Date.now(),
         userId: 'system',
         userName: 'System',
-        message: 'Failed to get bot response',
+        message: 'Failed to get bot response' + error.message,
         timestamp: new Date(),
         type: 'system'
       };

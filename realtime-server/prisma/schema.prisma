@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  gamesHosted   Game[]    @relation("GameHost")
+  gamesPlayed   GamePlayer[]
+  gamesWon      Int       @default(0)
+  coins         Int       @default(0)
+  createdAt     DateTime  @default(now())
+}
+
+model Game {
+  id          String       @id @default(cuid())
+  title       String?
+  description String?
+  scenario    String?      // AI-generated scenario
+  solution    String?      // The correct solution
+  suspects    Json?
+  clues       Json?
+  hostId      String?
+  host        User?        @relation("GameHost", fields: [hostId], references: [id])
+  status      GameStatus?  @default(WAITING)
+  maxPlayers  Int?         @default(4)
+  currentTurn Int?         @default(0)
+  players     GamePlayer[] // vector de useri prin relație GamePlayer
+  questions   Question[]
+  createdAt   DateTime?    @default(now())
+  updatedAt   DateTime?    @updatedAt
+}
+
+model GamePlayer {
+  id       String @id @default(cuid())
+  gameId   String
+  playerName String
+  userId   String
+  game     Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  position Int    // Turn order
+  isActive Boolean @default(true)
+  joinedAt DateTime @default(now())
+
+  @@unique([gameId, userId])
+  @@unique([gameId, position])
+}
+
+model Question {
+  id         String       @id @default(cuid())
+  gameId     String
+  playerId   String
+  question   String
+  answer     String?
+  type       QuestionType @default(YES_NO)
+  isValid    Boolean      @default(true)
+  game       Game         @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  askedAt    DateTime     @default(now())
+  answeredAt DateTime?
+}
+
+model Story {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum GameStatus {
+  WAITING
+  IN_PROGRESS
+  FINISHED
+}
+
+enum QuestionType {
+  YES_NO
+  ACCUSATION
+}

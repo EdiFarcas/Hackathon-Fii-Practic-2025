@@ -1,12 +1,10 @@
-"use client";
-
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { useState } from "react";
+// import { useState } from "react";
 import ProfileClient from "./ProfileClient";
-import MarketPlaceMenu from "../../components/MarketPlaceMenu";
+// import MarketPlaceMenu from "../../components/MarketPlaceMenu";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -15,7 +13,7 @@ export default async function ProfilePage() {
     redirect("/api/auth/signin");
   }
 
-  const user = await db.user.findUnique({
+  const dbUser = await db.user.findUnique({
     where: { email: session.user.email },
     select: {
       name: true,
@@ -23,6 +21,14 @@ export default async function ProfilePage() {
       gamesWon: true,
     },
   });
+
+  const user = dbUser
+    ? {
+        name: dbUser.name ?? "",
+        email: dbUser.email,
+        gamesWon: dbUser.gamesWon,
+      }
+    : null;
 
   if (!user) {
     redirect("/api/auth/signin");

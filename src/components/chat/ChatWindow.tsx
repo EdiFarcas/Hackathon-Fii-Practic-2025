@@ -1,114 +1,60 @@
-import { useSession } from "next-auth/react";
-import React, { useState, useEffect } from 'react';
-import { ChatMessage } from '../../interfaces/chat';
-import { openrouterChatbotService } from '../../services/chatBot';
+import React, { useState } from 'react';
+import type { User, ChatMessage, GameState } from '../../interfaces/game';
 import MessageList from './MessageList';
+import type { ChatMessage as LegacyChatMessage } from '../../interfaces/chat';
 import MessageInput from './MessageInput';
-import { useRouter } from "next/navigation";
 
-const ChatWindow: React.FC = () => {
-  const router = useRouter();
-  const { data: session, status } = useSession();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isBotTyping, setIsBotTyping] = useState(false);
-  const [showWinModal, setShowWinModal] = useState(false);
+interface ChatWindowProps {
+  messages: ChatMessage[];
+  onSendMessage: (message: string) => void;
+  userInfo: User | null;
+  gameState: GameState | null;
+  error: string | null;
+}
 
-  // Adaugă un mesaj inițial de la bot
-  useEffect(() => {
-    setMessages([
-      {
-        id: 'initial-bot-message',
-        text: 'Salut! Sunt Chatbot-ul tău. Cum te pot ajuta?',
-        sender: 'bot',
-        username: 'Master',
-        timestamp: new Date(),
-      },
-    ]);
-  }, []);
-  
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
+const ChatWindow: React.FC<ChatWindowProps> = ({ 
+  messages, 
+  onSendMessage, 
+  userInfo, 
+  gameState, 
+  error 
+}) => {
+  const [inputMessage, setInputMessage] = useState('');
 
-  const handleSendMessage = async (text: string) => {
-    const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
-      text,
-      sender: 'user',
-      username: session?.user?.name || 'User',
-      timestamp: new Date(),
-    };
-    // Adaugă mesajul userului la istoric
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setIsBotTyping(true);
-
-    try {
-      // Transformă istoricul în formatul cerut de OpenRouter
-      const messageHistory = [...messages, userMessage].map((msg) => ({
-        role: msg.sender === 'bot' ? 'assistant' : 'user',
-        content: msg.text,
-      }));
-      const botResponseText = await openrouterChatbotService(text, messageHistory);
-      
-      if (botResponseText.includes("Congratulations, you found the solution!")) {
-        setShowWinModal(true);
-      }
-      const botMessage: ChatMessage = {
-        id: `bot-${Date.now()}`,
-        text: botResponseText,
-        sender: 'bot',
-        username: 'Master',
-        timestamp: new Date(),
-      };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
-    } catch (error) {
-      console.error("Error getting response from bot:", error);
-      const errorMessage: ChatMessage = {
-        id: `error-${Date.now()}`,
-        text: "Oops, a apărut o eroare la comunicarea cu bot-ul.",
-        sender: 'bot',
-        username: 'Error',
-        timestamp: new Date(),
-      };
-      setMessages((prevMessages) => [...prevMessages, errorMessage]);
-    } finally {
-      setIsBotTyping(false);
-    }
+  const handleSendMessage = () => {
+    if (!inputMessage.trim()) return;
+    onSendMessage(inputMessage);
+    setInputMessage('');
   };
 
   return (
-    <div 
-      className="flex flex-col border border-gray-300 shadow-lg bg-white h-full"
-      style={{
-        position: 'absolute',
-        inset: '0',
-        width: '100%',
-        height: '100%',
-        zIndex: 40,
-      }}
-  >
-      <header className="p-4 bg-red-600 text-white text-center">
-        <h1 className="text-xl font-semibold">Chat cu Bot</h1>
-      </header>
-      <MessageList messages={messages} currentUsername={session?.user?.name || 'User'} />
-      {isBotTyping && <div className="p-2 text-sm text-gray-500 italic text-center">Bot-ul scrie...</div>}
-      <MessageInput onSendMessage={handleSendMessage} isSending={isBotTyping} />
+    <div className="flex flex-col h-full bg-gray-800/50 rounded-lg border border-red-900/30">
+      <div className="p-4 border-b border-red-900/30">
+        <h3 className="text-xl font-semibold text-red-300">Game Chat</h3>
+        {userInfo && (
+          <p className="text-sm text-gray-400">
+            Playing as: {userInfo.name} {userInfo.isHost ? '(Host)' : ''}
+          </p>
+        )}
+      </div>
 
-      {/* Modal de câștig */}
-      {showWinModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-          <div className="bg-white rounded-lg p-8 shadow-lg text-center">
-            <h2 className="text-2xl font-bold mb-4 text-green-700">🎉 Congratulations! 🎉</h2>
-            <p className="mb-4 text-gray-800">You have solved the mystery!</p>
-            <button
-              className="mt-4 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-              onClick={() => router.push("/")}
-            >
-              Close
-            </button>
+      <div className="flex-1 overflow-y-auto p-4">
+        <MessageList messages={messages} currentUserId={userInfo?.id} />
+        {error && (
+          <div className="bg-red-500/20 text-red-200 p-2 rounded mb-2">
+            {error}
           </div>
-        </div>
-      )}
+        )}
+      </div>
+
+      <div className="p-4 border-t border-red-900/30">
+        <MessageInput 
+          value={inputMessage}
+          onChange={(e) => setInputMessage(e.target.value)}
+          onSend={handleSendMessage}
+          placeholder="Type your message..."
+        />
+      </div>
     </div>
   );
 };

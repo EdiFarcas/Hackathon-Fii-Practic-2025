@@ -94,11 +94,11 @@ export default function MurderMysteryGiveaway() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-950 via-gray-900 to-black py-12 px-4 sm:px-6 lg:px-8 font-serif text-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black py-12 px-4 sm:px-6 lg:px-8 font-serif text-white">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12 relative">
-          <div className="absolute inset-0 bg-red-900/20 blur-3xl rounded-full"></div>
+          <div className="absolute inset-0 bg-gray-800/30 blur-3xl rounded-full"></div>
           <h1 className="text-4xl sm:text-5xl font-bold mb-2 text-red-200 drop-shadow-lg relative z-10">
             🔍 Detective&#39;s Evidence Vault
           </h1>

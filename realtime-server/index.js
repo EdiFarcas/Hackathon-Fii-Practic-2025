@@ -4,6 +4,10 @@ const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const { PrismaClient } = require("@prisma/client");
+// const fetch = require('node-fetch');
+
+// Track game rooms and their state
+const gameRooms = new Map();
 
 const prisma = new PrismaClient();
 const app = express();
@@ -17,65 +21,188 @@ const io = new Server(server, {
   }
 });
 
-// REST endpoint for health check (optional)
-app.get("/", (req, res) => res.send("Socket.IO server is running!"));
-
 // SOCKET.IO logic
 io.on("connection", (socket) => {
-  // Create lobby
-  socket.on("create-lobby", async ({ lobbyName, playerCount, playerName }, callback) => {
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const game = await prisma.game.create({
-      data: {
-        title: lobbyName,
-        maxPlayers: playerCount,
-        code,
-        status: "WAITING"
+  let currentGameId = null;
+  let currentUser = null;
+
+  // Join game
+  socket.on("join-game", async ({ gameId, user }, callback) => {
+    try {
+      const game = await prisma.game.findUnique({ 
+        where: { id: gameId },
+        include: { host: true }
+      });
+
+      if (!game) {
+        return callback({ error: "Game not found" });
       }
-    });
-    await prisma.gamePlayer.create({
-      data: {
-        gameId: game.id,
-        playerName
+
+      // Initialize game room if it doesn't exist
+      if (!gameRooms.has(gameId)) {
+        gameRooms.set(gameId, {
+          users: [],
+          chatMessages: [],
+          hostId: game.hostId,
+          currentCard: 0,
+          currentTurn: 5,
+          status: game.status || 'WAITING'
+        });
       }
-    });
-    socket.join(code);
-    callback({ code });
-    io.to(code).emit("lobby-update", await getLobbyState(game.id));
+
+      const gameRoom = gameRooms.get(gameId);
+      
+      // Check if room is full (max 4 players)
+      if (gameRoom.users.length >= 4) {
+        return callback({ error: "Game room is full" });
+      }
+
+      // Add user to room
+      const userInfo = {
+        id: user.id,
+        name: user.name,
+        isHost: game.hostId === user.id
+      };
+      
+      gameRoom.users.push(userInfo);
+      currentGameId = gameId;
+      currentUser = userInfo;
+      
+      // Join socket room
+      socket.join(gameId);
+      
+      // Notify everyone in the room
+      io.to(gameId).emit("room-update", {
+        users: gameRoom.users,
+        chatMessages: gameRoom.chatMessages
+      });
+
+      callback({ 
+        success: true, 
+        gameState: {
+          ...game,
+          users: gameRoom.users,
+          chatMessages: gameRoom.chatMessages,
+          currentCard: gameRoom.currentCard,
+          currentTurn: gameRoom.currentTurn
+        }, 
+        userInfo 
+      });
+    } catch (error) {
+      console.error("Error joining game:", error);
+      callback({ error: "Failed to join game" });
+    }
   });
 
-  // Join lobby
-  socket.on("join-lobby", async ({ code, playerName }, callback) => {
-    const game = await prisma.game.findUnique({ where: { code } });
-    if (!game) return callback({ error: "Lobby not found" });
-    const players = await prisma.gamePlayer.count({ where: { gameId: game.id } });
-    if (players >= game.maxPlayers) return callback({ error: "Lobby full" });
-    await prisma.gamePlayer.create({
-      data: {
-        gameId: game.id,
-        playerName
+  // Handle chat messages and bot responses
+  socket.on("send-message", async ({ gameId, message }) => {
+    if (!gameRooms.has(gameId) || !currentUser) return;
+    
+    const gameRoom = gameRooms.get(gameId);
+    const chatMessage = {
+      id: Date.now(),
+      userId: currentUser.id,
+      userName: currentUser.name,
+      message,
+      timestamp: new Date(),
+      type: 'user'
+    };
+    
+    gameRoom.chatMessages.push(chatMessage);
+    io.to(gameId).emit("chat-update", chatMessage);
+
+    // Get bot response
+    try {
+      const response = await fetch('http://localhost:3000/api/chatbot', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userMessage: message,
+          messageHistory: gameRoom.chatMessages
+            .filter(msg => msg.type !== 'system')
+            .map(msg => ({
+              role: msg.type === 'user' ? 'user' : 'assistant',
+              content: msg.message
+            }))
+        })
+      });
+
+      if (!response.ok) throw new Error('Bot API request failed');
+      const data = await response.json();
+
+      // Send bot response to all users in the room
+      if (data.result) {
+        const botMessage = {
+          id: Date.now(),
+          userId: 'bot',
+          userName: 'Game Master',
+          message: data.result,
+          timestamp: new Date(),
+          type: 'bot'
+        };
+        
+        gameRoom.chatMessages.push(botMessage);
+        io.to(gameId).emit("chat-update", botMessage);
       }
-    });
-    socket.join(code);
-    callback({ success: true });
-    io.to(code).emit("lobby-update", await getLobbyState(game.id));
+    } catch (error) {
+      console.error('Bot response error:', error);
+      const errorMessage = {
+        id: Date.now(),
+        userId: 'system',
+        userName: 'System',
+        message: 'Failed to get bot response',
+        timestamp: new Date(),
+        type: 'system'
+      };
+      gameRoom.chatMessages.push(errorMessage);
+      io.to(gameId).emit("chat-update", errorMessage);
+    }
   });
 
-  // Add more events as needed (chat, start game, etc)
+  // Handle card navigation sync
+  socket.on("sync-card", ({ gameId, index }) => {
+    if (!gameRooms.has(gameId) || !currentUser) return;
+    const gameRoom = gameRooms.get(gameId);
+    
+    // Only host can change cards during the game
+    if (gameRoom.status === 'PLAYING' && currentUser.id !== gameRoom.hostId) return;
+    
+    gameRoom.currentCard = index;
+    socket.to(gameId).emit("sync-card", index);
+  });
+
+  // Handle turn timer sync
+  socket.on("sync-turn", ({ gameId, turn }) => {
+    if (!gameRooms.has(gameId)) return;
+    const gameRoom = gameRooms.get(gameId);
+    gameRoom.currentTurn = turn;
+    socket.to(gameId).emit("sync-turn", turn);
+  });
+
+  // Handle disconnection
+  socket.on("disconnect", () => {
+    if (currentGameId && currentUser) {
+      const gameRoom = gameRooms.get(currentGameId);
+      if (gameRoom) {
+        // Remove user from room
+        gameRoom.users = gameRoom.users.filter(u => u.id !== currentUser.id);
+        
+        // Notify others
+        io.to(currentGameId).emit("room-update", {
+          users: gameRoom.users,
+          chatMessages: gameRoom.chatMessages
+        });
+
+        // Clean up empty rooms
+        if (gameRoom.users.length === 0) {
+          gameRooms.delete(currentGameId);
+        }
+      }
+    }
+  });
 });
-
-async function getLobbyState(gameId) {
-  const game = await prisma.game.findUnique({
-    where: { id: gameId },
-    include: { players: true }
-  });
-  return {
-    title: game.title,
-    code: game.code,
-    maxPlayers: game.maxPlayers,
-    players: game.players.map(p => p.playerName)
-  };
-}
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {

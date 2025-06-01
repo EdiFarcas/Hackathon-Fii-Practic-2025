@@ -2,21 +2,89 @@
 'use client';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
+import { io, Socket } from 'socket.io-client';
 import GameCard from './GameCard';
 import ChatWindow from './chat/ChatWindow';
 import CoinPurchaseMenu from './CoinPurchaseMenu';
 import { storyCards, getStoryByTitle } from '../data/storyCards';
+import type { User, ChatMessage, GameState, JoinGameResponse } from '../interfaces/game';
 
 const TURN_TIME = 5; // secunde
 
 const GameMenu: React.FC = () => {
   const { data: session } = useSession();
-  const [currentTurn, setCurrentTurn] = useState(5);
+  const [currentTurn, setCurrentTurn] = useState(TURN_TIME);
   const [screenWidth, setScreenWidth] = useState(1280);
   const [isPurchaseMenuOpen, setIsPurchaseMenuOpen] = useState(false);
   const [requiredCoins, setRequiredCoins] = useState(0);
-  const [currentStory, setCurrentStory] = useState(storyCards[0]); // Folosim prima poveste ca default
+  const [currentStory, setCurrentStory] = useState(storyCards[0]);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [userInfo, setUserInfo] = useState<User | null>(null);
+  const searchParams = useSearchParams();
+  const gameId = searchParams.get('gameId');
 
+  // On mount: connect to socket and join room by code from URL
+  useEffect(() => {
+    if (!gameId) return;
+
+    const s = io('http://localhost:4000');
+    setSocket(s);
+
+    // Get user info from session or prompt for name
+    const userName = session?.user?.name || prompt('Enter your name:');
+    if (!userName) {
+      setError('Name is required to join the game');
+      return;
+    }
+
+    const user: User = {
+      id: (session?.user as { id?: string })?.id || `temp-${Date.now()}`,
+      name: userName,
+      isHost: false
+    };
+
+    // Join game room
+    s.emit('join-game', { gameId, user }, (response: JoinGameResponse) => {
+      if (response.error) {
+        setError(response.error);
+      } else if (response.gameState && response.userInfo) {
+        setGameState(response.gameState);
+        setUserInfo(response.userInfo);
+        setChatMessages(response.gameState.chatMessages || []);
+      }
+    });
+
+    // Listen for room updates
+    s.on('room-update', ({ users, chatMessages }: { users: User[], chatMessages: ChatMessage[] }) => {
+      setGameState(prev => prev ? {
+        ...prev,
+        users,
+        chatMessages
+      } : null);
+      setChatMessages(chatMessages);
+    });
+
+    // Listen for new chat messages
+    s.on('chat-update', (message: ChatMessage) => {
+      setChatMessages(prev => [...prev, message]);
+    });
+
+    return () => {
+      s.disconnect();
+    };
+  }, [gameId, session]);
+
+  // Send chat message
+  const handleSendMessage = (message: string) => {
+    if (!socket || !gameId) return;
+    socket.emit('send-message', { gameId, message });
+  };
+
+  // Bonus click logic
   const handleBonusClick = (cost: number) => {
     const userCoins = session?.user?.coins ?? 0;
     if (userCoins < cost) {
@@ -55,7 +123,6 @@ const GameMenu: React.FC = () => {
       return { colSize: '75px', rowSize: '55px' }; // Large desktop
     }
   };
-
   const { colSize, rowSize } = getGridDimensions();
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -64,7 +131,7 @@ const GameMenu: React.FC = () => {
   const resetTurnTimer = useCallback(() => {
     setCurrentTurn(TURN_TIME);
   }, []);
-  
+
   // Timer logic
   useEffect(() => {
     if (currentTurn <= 0) return;
@@ -82,10 +149,15 @@ const GameMenu: React.FC = () => {
     };
   }, [currentTurn]);
 
-  // Game data
+  // Game data fallback
   const gameData = {
+<<<<<<< HEAD
     players: ['Ariel', 'Marcel', 'Victoria'],
     master: session?.user?.name || session?.user?.email || 'Unknown',
+=======
+    players: gameState?.users?.map(u => u.name) || ['Ariel', 'Marcel', 'Victoria'],
+    master: '...',
+>>>>>>> 1b1565a513a17369ccf5533770e4bc49ce6769d0
     story: 'Poza'
   };
 
@@ -102,13 +174,11 @@ const GameMenu: React.FC = () => {
         .hover-lift {
           transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
         .hover-lift:hover {
           transform: translateY(-5px);
           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
       `}</style>
-      
       <div className="w-full h-full">
         <div 
           className="grid gap-1 sm:gap-2 mx-auto w-full h-full"
@@ -150,7 +220,9 @@ const GameMenu: React.FC = () => {
             }}
           >
             <GameCard title={`Your turn in ${currentTurn}...`} className="h-full" />
-          </div>          {/* Card Story */}
+          </div>
+
+          {/* Card Story */}
           <div 
             className="text-xs p-1 sm:p-2 hover-lift"
             style={{
@@ -166,9 +238,8 @@ const GameMenu: React.FC = () => {
                 right: '1rem',
               }}
             >              
-            
+              {/* Optionally show coins here */}
             </div>
-
             <GameCard title={currentStory.title} className="h-full">
               <div className="flex flex-col h-full">
                 <div>
@@ -177,7 +248,6 @@ const GameMenu: React.FC = () => {
                     <p className="text-base text-center font-semibold text-black">Difficulty: <span className="text-yellow-300">{currentStory.difficulty}</span></p>
                   </div>
                 </div>
-                
                 <div className="flex-grow flex items-end justify-center mt-8">
                   <img 
                     src={currentStory.imageUrl} 
@@ -188,7 +258,9 @@ const GameMenu: React.FC = () => {
                 </div>
               </div>
             </GameCard>
-          </div>          {/* Coins Display */}
+          </div>
+
+          {/* Coins Display */}
           <div 
             className="flex items-center text-xl text-yellow-300 font-bold"
             style={{
@@ -207,7 +279,8 @@ const GameMenu: React.FC = () => {
               gridColumn: '2 / 9',
               gridRow: '13 / 17'
             }}
-          >                <GameCard title="Bonuses" className="h-full">
+          >
+            <GameCard title="Bonuses" className="h-full">
               <div className="space-y-3 text-base text-center">
                 <p 
                   className="transition-all duration-300 hover:scale-105 hover:text-yellow-200 cursor-pointer"
@@ -236,9 +309,14 @@ const GameMenu: React.FC = () => {
               width: '100%'
             }}
           >
-            <ChatWindow />
+            <ChatWindow 
+              messages={chatMessages}
+              onSendMessage={handleSendMessage}
+              userInfo={userInfo}
+              gameState={gameState}
+              error={error}
+            />
           </div>
-
         </div>
         {/* CoinPurchaseMenu trebuie să fie la finalul layout-ului, nu în grid! */}
         <CoinPurchaseMenu 

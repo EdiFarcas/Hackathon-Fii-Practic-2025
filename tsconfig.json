@@ -19,9 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["Test_fii_practic/src/*"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "Test_fii_practic/.next/types/**/*.ts"],
-  "exclude": ["Test_fii_practic/node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

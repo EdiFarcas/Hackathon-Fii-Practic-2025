@@ -12,6 +12,7 @@ export default function MurderMysteryGiveaway() {
   const [showCreateStoryModal, setShowCreateStoryModal] = useState(false);
   const [storyTitle, setStoryTitle] = useState("");
   const [storyDescription, setStoryDescription] = useState("");
+  const [storySolution, setStorySolution] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState("");
   const [joinGameId, setJoinGameId] = useState("");
@@ -73,7 +74,7 @@ export default function MurderMysteryGiveaway() {
     setPublishError("");
     try {
       // Folosește apel server action, nu fetch
-      await createStory({ title: storyTitle, description: storyDescription });
+      await createStory({ title: storyTitle, description: storyDescription, solution: storySolution });
       setShowCreateStoryModal(false);
     } catch {
       setPublishError("Eroare la publicare. Încearcă din nou.");
@@ -100,7 +101,7 @@ export default function MurderMysteryGiveaway() {
   useEffect(() => {
     if (!joinGameId) return;
     if (!socketRef.current) {
-      socketRef.current = io("http://localhost:3001");
+      socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000");
     }
     const socket = socketRef.current;
     if (!socket) return;
@@ -394,9 +395,9 @@ export default function MurderMysteryGiveaway() {
             >
               ✖
             </button>
-            <h2 className="text-2xl font-bold text-red-300 mb-4">Creează o poveste nouă</h2>
+            <h2 className="text-2xl font-bold text-red-300 mb-4">Create a new story</h2>
             <div className="flex flex-col gap-4 text-left">
-              <label className="font-semibold text-red-200">Titlu</label>
+              <label className="font-semibold text-red-200">Title</label>
               <input
                 type="text"
                 value={storyTitle}
@@ -404,10 +405,17 @@ export default function MurderMysteryGiveaway() {
                 className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
                 placeholder="Titlul poveștii"
               />
-              <label className="font-semibold text-red-200 mt-2">Descriere</label>
+              <label className="font-semibold text-red-200 mt-2">Description</label>
               <textarea
                 value={storyDescription}
                 onChange={e => setStoryDescription(e.target.value)}
+                className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500 min-h-[100px]"
+                placeholder="Descrierea poveștii"
+              />
+              <label className="font-semibold text-red-200 mt-2">Solution</label>
+              <textarea
+                value={storySolution}
+                onChange={e => setStorySolution(e.target.value)}
                 className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500 min-h-[100px]"
                 placeholder="Descrierea poveștii"
               />
@@ -415,7 +423,7 @@ export default function MurderMysteryGiveaway() {
             {publishError && <p className="text-red-400 font-semibold">{publishError}</p>}
             <button
               onClick={handlePublishStory}
-              disabled={isPublishing || !storyTitle.trim() || !storyDescription.trim()}
+              disabled={isPublishing || !storyTitle.trim() || !storyDescription.trim() || !storySolution.trim()}
               className={`bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-xl text-lg transition-all ${isPublishing ? 'opacity-60 cursor-not-allowed' : ''}`}
             >
               {isPublishing ? 'Se publică...' : '📢 Publish Story'}

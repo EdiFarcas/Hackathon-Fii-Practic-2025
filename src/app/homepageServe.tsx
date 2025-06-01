@@ -2,11 +2,15 @@
 
 import { db } from "../lib/db";
 
-export async function createStory({ title, description }: { title: string; description: string }) {
+export async function createStory({ title, description, solution }: { title: string; description: string; solution: string }) {
+    if (!title || !description || !solution) {
+        throw new Error("Title, description, and solution are required to create a story.");
+    }
     const story = await db.story.create({
         data: {
             title,
             description,
+            solution,
         },
     });
     if (typeof window !== "undefined") {

@@ -85,7 +85,7 @@ const GameMenu: React.FC = () => {
   // Game data
   const gameData = {
     players: ['Ariel', 'Marcel', 'Victoria'],
-    master: '...',
+    master: session?.user?.name || session?.user?.email || 'Unknown',
     story: 'Poza'
   };
 
@@ -130,6 +130,13 @@ const GameMenu: React.FC = () => {
                 {gameData.players.map((player, index) => (
                   <li key={index} className="text-white truncate text-center">{player}</li>
                 ))}
+                {/* Show current user (email and username) */}
+                {session?.user && (
+                  <li className="text-green-300 truncate text-center font-bold">
+                    {session.user.name || 'Anonymous'}
+                    <span className="block text-xs text-gray-300">{session.user.email}</span>
+                  </li>
+                )}
               </ul>
             </GameCard>
           </div>

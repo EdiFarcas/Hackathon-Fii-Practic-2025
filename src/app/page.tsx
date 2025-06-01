@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createStory } from "./homepageServe"
 import { io, Socket } from "socket.io-client";
+import { createLobby } from "./homepageServe";
 
 export default function MurderMysteryGiveaway() {
   const [activeTab, setActiveTab] = useState("how");
@@ -15,6 +16,12 @@ export default function MurderMysteryGiveaway() {
   const [publishError, setPublishError] = useState("");
   const [joinGameId, setJoinGameId] = useState("");
   const [joinError, setJoinError] = useState("");
+  const [showLobbyModal, setShowLobbyModal] = useState(false);
+  const [lobbyGameId, setLobbyGameId] = useState("");
+  const [lobbyTitle, setLobbyTitle] = useState("");
+  const [lobbyDescription, setLobbyDescription] = useState("");
+  const [lobbyError, setLobbyError] = useState("");
+  const [isCreatingLobby, setIsCreatingLobby] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   const [sharedValue, setSharedValue] = useState("");
 
@@ -28,7 +35,15 @@ export default function MurderMysteryGiveaway() {
   };
 
   const handleCreateLobby = () => {
-    // Your logic for creating a lobby
+    setShowLobbyModal(true);
+    setLobbyGameId("");
+    setLobbyTitle("");
+    setLobbyDescription("");
+    setLobbyError("");
+  };
+
+  const closeLobbyModal = () => {
+    setShowLobbyModal(false);
   };
 
   const handleJoinLobby = async () => {
@@ -64,6 +79,20 @@ export default function MurderMysteryGiveaway() {
       setPublishError("Eroare la publicare. Încearcă din nou.");
     } finally {
       setIsPublishing(false);
+    }
+  };
+
+  const handleLobbySubmit = async () => {
+    setIsCreatingLobby(true);
+    setLobbyError("");
+    try {
+      // Folosește apel server action, nu fetch
+      await createLobby({ id: lobbyGameId, title: lobbyTitle, description: lobbyDescription });
+      setShowLobbyModal(false);
+    } catch {
+      setLobbyError("Eroare la crearea lobby-ului. Încearcă din nou.");
+    } finally {
+      setIsCreatingLobby(false);
     }
   };
 
@@ -390,6 +419,54 @@ export default function MurderMysteryGiveaway() {
               className={`bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-xl text-lg transition-all ${isPublishing ? 'opacity-60 cursor-not-allowed' : ''}`}
             >
               {isPublishing ? 'Se publică...' : '📢 Publish Story'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Lobby Creation Modal */}
+      {showLobbyModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-lg z-50 flex items-center justify-center">
+          <div className="bg-gray-900 p-8 rounded-2xl border-2 border-red-700 max-w-lg w-full relative text-white text-center space-y-6">
+            <button
+              onClick={closeLobbyModal}
+              className="absolute top-4 right-4 text-red-300 hover:text-white text-xl font-bold"
+            >
+              ✖
+            </button>
+            <h2 className="text-2xl font-bold text-red-300 mb-4">Creează un Lobby Nou</h2>
+            <div className="flex flex-col gap-4 text-left">
+              <label className="font-semibold text-red-200">Game ID</label>
+              <input
+                type="text"
+                value={lobbyGameId}
+                onChange={e => setLobbyGameId(e.target.value)}
+                className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="ID-ul unic al jocului"
+              />
+              <label className="font-semibold text-red-200 mt-2">Titlu</label>
+              <input
+                type="text"
+                value={lobbyTitle}
+                onChange={e => setLobbyTitle(e.target.value)}
+                className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="Titlul poveștii"
+              />
+              <label className="font-semibold text-red-200 mt-2">Descriere</label>
+              <textarea
+                value={lobbyDescription}
+                onChange={e => setLobbyDescription(e.target.value)}
+                className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500 min-h-[100px]"
+                placeholder="Descrierea poveștii"
+              />
+            </div>
+            {lobbyError && <p className="text-red-400 font-semibold">{lobbyError}</p>}
+            <button
+              onClick={handleLobbySubmit}
+              disabled={isCreatingLobby || !lobbyGameId.trim() || !lobbyTitle.trim() || !lobbyDescription.trim()}
+              className={`bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-xl text-lg transition-all ${isCreatingLobby ? 'opacity-60 cursor-not-allowed' : ''}`}
+            >
+              {isCreatingLobby ? 'Se creează...' : '🚀 Creează Lobby'}
             </button>
           </div>
         </div>

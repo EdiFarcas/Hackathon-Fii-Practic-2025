@@ -321,19 +321,6 @@ export default function MurderMysteryGiveaway() {
             </div>
           )}
         </div>
-
-        {/* Footer */}
-        <div className="mt-12 text-center">
-          <div className="bg-gray-900/50 p-6 rounded-lg border border-red-900/30 backdrop-blur-sm">
-            <div className="flex items-center justify-center mb-2">
-              <span className="mr-2 text-2xl">⚠️</span>
-              <p className="text-red-300 font-semibold">Case Status: Under Investigation</p>
-            </div>
-            <p className="text-gray-400 text-sm">
-              This detective system is constantly evolving. New mysteries and rewards are being added regularly.
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Modal */}

@@ -74,7 +74,7 @@ export default function Navbar() {
             onClick={() => setShowMarket(true)}
           >
             <span className="mr-2">🛒</span>
-            {!isCollapsed && "MarketPlace"}
+            {!isCollapsed && "Marketplace"}
           </button>
         </li>
       </ul>

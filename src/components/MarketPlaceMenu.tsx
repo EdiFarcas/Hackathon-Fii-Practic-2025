@@ -14,7 +14,7 @@ const plans = [
 	},
 	{
 		name: 'Pro Plan',
-		price: '$4.99/month',
+		price: '$7.99/month',
 		color: 'text-blue-400',
 		features: [
 			'Up to 8 players per lobby',
@@ -70,7 +70,7 @@ const MarketPlaceMenu: React.FC<{
 					✖
 				</button>
 				<h2 className="text-4xl font-extrabold text-red-300 mb-8 text-center">
-					MarketPlace
+					Marketplace
 				</h2>
 				{success ? (
 					<div className="flex flex-col items-center justify-center min-h-[200px]">

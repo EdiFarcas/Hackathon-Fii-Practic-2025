@@ -14,3 +14,17 @@ export async function createStory({ title, description }: { title: string; descr
     }
     return story;
 }
+
+export async function createLobby({ id, title, description }: { id: string; title: string; description: string }) {
+    const lobby = await db.game.create({
+        data: {
+            id,
+            title,
+            description,
+        },
+    });
+    if (typeof window !== "undefined") {
+        window.alert("Lobby created successfully!");
+    }
+    return lobby;
+}

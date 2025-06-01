@@ -1,4 +1,3 @@
-// components/GameMenu.tsx
 'use client';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';

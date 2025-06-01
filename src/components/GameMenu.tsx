@@ -44,7 +44,6 @@ const GameMenu: React.FC = () => {
     const user: User = {
       id: (session?.user as { id?: string })?.id || `temp-${Date.now()}`,
       name: userName,
-      email: session?.user?.email || undefined, // Pass email for profile
       isHost: false
     };
 
@@ -152,7 +151,7 @@ const GameMenu: React.FC = () => {
 
   // Game data fallback
   const gameData = {
-    players: gameState?.users?.map(u => u.name) || ['Ariel', 'Marcel', 'Victoria'],
+    players: ['Ariel', 'Marcel', 'Victoria'],
     master: '...',
     story: 'Poza'
   };
@@ -193,20 +192,9 @@ const GameMenu: React.FC = () => {
           >              
             <GameCard title="Players" className="h-full">
               <ul className="space-y-2 text-base">
-                {/* Show all players from gameState if available */}
-                {gameState?.users?.map((player, index) => (
-                  <li key={index} className={`truncate text-center ${player.email === session?.user?.email ? 'text-green-300 font-bold' : 'text-white'}`}>
-                    {player.name || 'Anonymous'}
-                    <span className="block text-xs text-gray-300">{player.email}</span>
-                  </li>
+                {gameData.players.map((player, index) => (
+                  <li key={index} className="text-white truncate text-center">{player}</li>
                 ))}
-                {/* Fallback if no gameState */}
-                {!gameState?.users && session?.user && (
-                  <li className="text-green-300 truncate text-center font-bold">
-                    {session.user.name || 'Anonymous'}
-                    <span className="block text-xs text-gray-300">{session.user.email}</span>
-                  </li>
-                )}
               </ul>
             </GameCard>
           </div>
@@ -220,9 +208,7 @@ const GameMenu: React.FC = () => {
             }}
           >
             <GameCard title={`Your turn in ${currentTurn}...`} className="h-full" />
-          </div>
-
-          {/* Card Story */}
+          </div>          {/* Card Story */}
           <div 
             className="text-xs p-1 sm:p-2 hover-lift"
             style={{
@@ -238,8 +224,9 @@ const GameMenu: React.FC = () => {
                 right: '1rem',
               }}
             >              
-              {/* Optionally show coins here */}
+            
             </div>
+
             <GameCard title={currentStory.title} className="h-full">
               <div className="flex flex-col h-full">
                 <div>
@@ -248,6 +235,7 @@ const GameMenu: React.FC = () => {
                     <p className="text-base text-center font-semibold text-black">Difficulty: <span className="text-yellow-300">{currentStory.difficulty}</span></p>
                   </div>
                 </div>
+                
                 <div className="flex-grow flex items-end justify-center mt-8">
                   <img 
                     src={currentStory.imageUrl} 
@@ -258,9 +246,7 @@ const GameMenu: React.FC = () => {
                 </div>
               </div>
             </GameCard>
-          </div>
-
-          {/* Coins Display */}
+          </div>          {/* Coins Display */}
           <div 
             className="flex items-center text-xl text-yellow-300 font-bold"
             style={{
@@ -279,8 +265,7 @@ const GameMenu: React.FC = () => {
               gridColumn: '2 / 9',
               gridRow: '13 / 17'
             }}
-          >
-            <GameCard title="Bonuses" className="h-full">
+          >                <GameCard title="Bonuses" className="h-full">
               <div className="space-y-3 text-base text-center">
                 <p 
                   className="transition-all duration-300 hover:scale-105 hover:text-yellow-200 cursor-pointer"
@@ -309,7 +294,7 @@ const GameMenu: React.FC = () => {
               width: '100%'
             }}
           >
-            <ChatWindow 
+            <ChatWindow
               messages={chatMessages}
               onSendMessage={handleSendMessage}
               userInfo={userInfo}
@@ -317,6 +302,7 @@ const GameMenu: React.FC = () => {
               error={error}
             />
           </div>
+
         </div>
         {/* CoinPurchaseMenu trebuie să fie la finalul layout-ului, nu în grid! */}
         <CoinPurchaseMenu 

@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import pkg from '@prisma/client'
+const { PrismaClient } = pkg
 import { getServerSession } from 'next-auth/next'
 // Update the path below to the correct relative path if needed
 // Update the path below to the correct relative path if needed
@@ -118,7 +119,24 @@ export async function getUserProfile(userId?: string): Promise<UserProfileData |
     })
 
     // Combine recent games (both hosted and played)
-    const hostedGamesFormatted = user.gamesHosted.map(game => ({
+    interface HostedGameFormatted {
+      id: string;
+      title: string;
+      status: string;
+      createdAt: Date;
+      isHost: boolean;
+    }
+
+    const hostedGamesFormatted: HostedGameFormatted[] = user.gamesHosted.map((game: {
+      id: string;
+      title: string | null;
+      status: string | null;
+      createdAt: Date | null;
+      players: Array<{
+      userId: string;
+      user: { name: string | null };
+      }>;
+    }) => ({
       id: game.id,
       title: game.title ?? '',
       status: game.status ?? '',
@@ -126,7 +144,25 @@ export async function getUserProfile(userId?: string): Promise<UserProfileData |
       isHost: true
     }))
 
-    const playedGamesFormatted = user.gamesPlayed.map(gamePlayer => ({
+    interface PlayedGameFormatted {
+      id: string;
+      title: string;
+      status: string;
+      createdAt: Date;
+      isHost: boolean;
+    }
+
+    interface GamePlayer {
+      game: {
+      id: string;
+      title: string | null;
+      status: string | null;
+      createdAt: Date | null;
+      hostId: string;
+      };
+    }
+
+    const playedGamesFormatted: PlayedGameFormatted[] = user.gamesPlayed.map((gamePlayer: GamePlayer) => ({
       id: gamePlayer.game.id,
       title: gamePlayer.game.title ?? '',
       status: gamePlayer.game.status ?? '',

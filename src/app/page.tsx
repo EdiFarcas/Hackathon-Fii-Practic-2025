@@ -100,7 +100,7 @@ export default function MurderMysteryGiveaway() {
   useEffect(() => {
     if (!joinGameId) return;
     if (!socketRef.current) {
-      socketRef.current = io("http://localhost:3001");
+      socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000");
     }
     const socket = socketRef.current;
     if (!socket) return;

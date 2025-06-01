@@ -148,6 +148,9 @@ io.on("connection", (socket) => {
       }
     } catch (error) {
       console.error('Bot response error:', error);
+      console.print(error.message);
+      console.print(error.stack);
+      
       const errorMessage = {
         id: Date.now(),
         userId: 'system',

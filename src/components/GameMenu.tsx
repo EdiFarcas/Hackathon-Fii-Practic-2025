@@ -44,6 +44,7 @@ const GameMenu: React.FC = () => {
     const user: User = {
       id: (session?.user as { id?: string })?.id || `temp-${Date.now()}`,
       name: userName,
+      email: session?.user?.email || undefined, // Pass email for profile
       isHost: false
     };
 
@@ -151,13 +152,8 @@ const GameMenu: React.FC = () => {
 
   // Game data fallback
   const gameData = {
-<<<<<<< HEAD
-    players: ['Ariel', 'Marcel', 'Victoria'],
-    master: session?.user?.name || session?.user?.email || 'Unknown',
-=======
     players: gameState?.users?.map(u => u.name) || ['Ariel', 'Marcel', 'Victoria'],
     master: '...',
->>>>>>> 1b1565a513a17369ccf5533770e4bc49ce6769d0
     story: 'Poza'
   };
 
@@ -197,11 +193,15 @@ const GameMenu: React.FC = () => {
           >              
             <GameCard title="Players" className="h-full">
               <ul className="space-y-2 text-base">
-                {gameData.players.map((player, index) => (
-                  <li key={index} className="text-white truncate text-center">{player}</li>
+                {/* Show all players from gameState if available */}
+                {gameState?.users?.map((player, index) => (
+                  <li key={index} className={`truncate text-center ${player.email === session?.user?.email ? 'text-green-300 font-bold' : 'text-white'}`}>
+                    {player.name || 'Anonymous'}
+                    <span className="block text-xs text-gray-300">{player.email}</span>
+                  </li>
                 ))}
-                {/* Show current user (email and username) */}
-                {session?.user && (
+                {/* Fallback if no gameState */}
+                {!gameState?.users && session?.user && (
                   <li className="text-green-300 truncate text-center font-bold">
                     {session.user.name || 'Anonymous'}
                     <span className="block text-xs text-gray-300">{session.user.email}</span>

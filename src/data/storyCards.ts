@@ -13,7 +13,7 @@ export const storyCards = [
     new GameCardData(
         'Fatal shot',
         'A hunter aimed his gun carefully and fired. Seconds later, he realized his mistake. Minutes later, he was dead.',
-        'Medium',
+        'Easy',
         '/poza2.png',
         'He hunted in snow-capped mountains. The shot provoked an avalanche, which covered the man. He died of strangulation.',
         { x: 10, y: 5 }

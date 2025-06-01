@@ -26,57 +26,94 @@ const GameMenu: React.FC = () => {
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const searchParams = useSearchParams();
   const gameId = searchParams.get('gameId');
+  const storyTitle = searchParams.get('story');
 
-  // On mount: connect to socket and join room by code from URL
+  // Set initial story as soon as possible, before any socket connection
+  useEffect(() => {
+    if (storyTitle) {
+      const found = getStoryByTitle(storyTitle);
+      if (found) {
+        setCurrentStory(found);
+        // Let's give the UI a chance to update
+        return;
+      }
+    }
+  }, [storyTitle]);
+
+  // Delay socket connection to allow initial render
   useEffect(() => {
     if (!gameId) return;
 
-    const s = io('http://localhost:4000');
-    setSocket(s);
+    const connectToSocket = async () => {
+      // Increase delay to ensure story and UI are rendered
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Get user info from session or prompt for name
-    const userName = session?.user?.name || prompt('Enter your name:');
-    if (!userName) {
-      setError('Name is required to join the game');
-      return;
-    }
+      const s = io('http://localhost:4000');
+      setSocket(s);
 
-    const user: User = {
-      id: (session?.user as { id?: string })?.id || `temp-${Date.now()}`,
-      name: userName,
-      isHost: false
+      // Get user info from session or prompt for name
+      const userName = session?.user?.name || prompt('Enter your name:');
+      if (!userName) {
+        setError('Name is required to join the game');
+        return;
+      }
+
+      const user: User = {
+        id: (session?.user as { id?: string })?.id || `temp-${Date.now()}`,
+        name: userName,
+        isHost: false
+      };
+
+      // Join game room with story info
+      s.emit('join-game', { gameId, user, storyTitle }, (response: JoinGameResponse) => {
+        if (response.error) {
+          setError(response.error);
+        } else if (response.gameState && response.userInfo) {
+          setGameState(response.gameState);
+          setUserInfo(response.userInfo);
+          setChatMessages(response.gameState.chatMessages || []);
+          
+          // Only update story if it's different from current
+          if (response.gameState.storyTitle && (!currentStory || response.gameState.storyTitle !== currentStory.title)) {
+            const story = getStoryByTitle(response.gameState.storyTitle);
+            if (story) setCurrentStory(story);
+          }
+        }
+      });
+
+      // Listen for room updates
+      s.on('room-update', ({ users, chatMessages, storyTitle: updatedStoryTitle }: { users: User[], chatMessages: ChatMessage[], storyTitle?: string }) => {
+        setGameState(prev => prev ? {
+          ...prev,
+          users,
+          chatMessages,
+          storyTitle: updatedStoryTitle || prev.storyTitle
+        } : null);
+        setChatMessages(chatMessages);
+        
+        // Update story when it changes in game state
+        if (updatedStoryTitle) {
+          const story = getStoryByTitle(updatedStoryTitle);
+          if (story) setCurrentStory(story);
+        }
+      });
+
+      // Listen for new chat messages
+      s.on('chat-update', (message: ChatMessage) => {
+        setChatMessages(prev => [...prev, message]);
+      });
     };
 
-    // Join game room
-    s.emit('join-game', { gameId, user }, (response: JoinGameResponse) => {
-      if (response.error) {
-        setError(response.error);
-      } else if (response.gameState && response.userInfo) {
-        setGameState(response.gameState);
-        setUserInfo(response.userInfo);
-        setChatMessages(response.gameState.chatMessages || []);
-      }
-    });
-
-    // Listen for room updates
-    s.on('room-update', ({ users, chatMessages }: { users: User[], chatMessages: ChatMessage[] }) => {
-      setGameState(prev => prev ? {
-        ...prev,
-        users,
-        chatMessages
-      } : null);
-      setChatMessages(chatMessages);
-    });
-
-    // Listen for new chat messages
-    s.on('chat-update', (message: ChatMessage) => {
-      setChatMessages(prev => [...prev, message]);
-    });
+    // Start the connection process
+    connectToSocket();
 
     return () => {
-      s.disconnect();
+      if (socket) {
+        socket.disconnect();
+      }
     };
   }, [gameId, session]);
+  // Removed duplicate useEffect as it's now handled in the socket connection useEffect
 
   // Send chat message
   const handleSendMessage = (message: string) => {
@@ -229,10 +266,17 @@ const GameMenu: React.FC = () => {
 
             <GameCard title={currentStory.title} className="h-full">
               <div className="flex flex-col h-full">
-                <div>
-                  <p className="mb-3 text-lg text-center text-black">{currentStory.description}</p>
+                <div>                  <p className="mb-3 text-lg text-center text-black">{currentStory.description}</p>
                   <div className="mb-8">
-                    <p className="text-base text-center font-semibold text-black">Difficulty: <span className="text-yellow-300">{currentStory.difficulty}</span></p>
+                    <p className="text-base text-center font-semibold text-black">
+                      Difficulty: <span className={`${
+                        currentStory.difficulty === 'Hard' ? 'text-red-600' :
+                        currentStory.difficulty === 'Easy' ? 'text-green-600' :
+                        'text-yellow-600'
+                      } font-bold`}>
+                        {currentStory.difficulty}
+                      </span>
+                    </p>
                   </div>
                 </div>
                 

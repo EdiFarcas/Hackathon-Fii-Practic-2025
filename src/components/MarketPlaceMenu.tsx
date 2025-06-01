@@ -26,7 +26,7 @@ const plans = [
 	},
 	{
 		name: 'Exclusive Plan',
-		price: '$19.99/month',
+		price: '$8.50/month',
 		color: 'text-purple-400',
 		features: [
 			'Up to 15 players per lobby',

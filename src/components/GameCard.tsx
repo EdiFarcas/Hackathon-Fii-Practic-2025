@@ -13,9 +13,12 @@ interface GameCardProps {
 
 
 const GameCard: React.FC<GameCardProps> = ({ title, children, className }) => {
-  // Card alb doar pentru cardurile de poveste (din storyCards)
+  // Card alb doar pentru cardurile de poveste (din storyCards)  // Toate cardurile care conțin povești
   const storyTitles = [
     'Jack and Judy are dead',
+        'Fatal shot',
+    'Death: delayed',
+    'Red high heels',
     'Misterul Ceasului',
     'Camera Închisă',
     'Umbra din Oglindă',

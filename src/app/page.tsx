@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { createStory } from "./homepageServe"
 import { io, Socket } from "socket.io-client";
 import { createLobby } from "./homepageServe";
+import { getStoryByTitle } from "@/data/storyCards";
+import type { GameCardData } from "@/models/GameCardData";
 
 export default function MurderMysteryGiveaway() {
   const [activeTab, setActiveTab] = useState("how");
@@ -24,10 +26,15 @@ export default function MurderMysteryGiveaway() {
   const [isCreatingLobby, setIsCreatingLobby] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   const [sharedValue, setSharedValue] = useState("");
+  const [currentStory, setCurrentStory] = useState<GameCardData | null>(null);
 
   const handleStartGame = (title: string) => {
-    setModalTitle(title);
-    setShowModal(true);
+    const story = getStoryByTitle(title);
+    if (story) {
+      setCurrentStory(story);
+      setModalTitle(title);
+      setShowModal(true);
+    }
   };
 
   const closeModal = () => {
@@ -52,9 +59,8 @@ export default function MurderMysteryGiveaway() {
       setJoinError("Introdu un Game ID valid!");
       return;
     }
-    // Aici poți adăuga logica de verificare în DB sau direct conectare la WebSocket
-    // Exemplu: redirect către pagina de game cu id-ul respectiv
-    window.location.href = `/game?gameId=${joinGameId}`;
+    // Aici poți adăuga logica de verificare în DB sau direct conectare la WebSocket    // Redirect către pagina de game cu id-ul și povestea selectată
+    window.location.href = `/game?gameId=${joinGameId}&story=${modalTitle}`;
   };
 
   const openCreateStoryModal = () => {
@@ -336,46 +342,57 @@ export default function MurderMysteryGiveaway() {
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-transparent backdrop-blur-lg z-50 flex items-center justify-center">
-          <div className="bg-gray-900 p-8 rounded-2xl border-2 border-red-700 max-w-lg w-full relative text-white text-center space-y-6">
+      {showModal && currentStory && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-lg z-50 flex items-center justify-center">
+          <div className="bg-gray-900 p-8 rounded-2xl border-2 border-red-700 max-w-lg w-full relative text-white">
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 text-red-300 hover:text-white text-xl font-bold"
+              className="absolute top-4 right-4 text-red-300 hover:text-white text-2xl font-bold transition-colors duration-200"
             >
               ✖
             </button>
-            <h2 className="text-2xl font-bold text-red-300">{modalTitle}</h2>
-            <p className="text-gray-300">
+            <h2 className="text-3xl font-bold text-red-300 mb-4 text-center">{currentStory.title}</h2>
+            <div className="bg-white rounded-xl p-4 mb-6 flex flex-col items-center">
+              <img 
+                src={currentStory.imageUrl} 
+                alt={currentStory.title}
+                className="w-32 h-48 object-contain rounded-lg mb-4 border border-red-700"
+              />
+              <p className="text-gray-800 text-lg font-medium mb-4 text-center">
+                {currentStory.description}
+              </p>
+              <p className="text-base text-center font-semibold text-black">
+                Difficulty: <span className={`$ {
+                  currentStory.difficulty === 'Hard' ? 'text-red-600' :
+                  currentStory.difficulty === 'Easy' ? 'text-green-600' :
+                  'text-yellow-600'
+                } font-bold`}>
+                  {currentStory.difficulty}
+                </span>
+              </p>
+            </div>
+            <p className="text-gray-300 mb-4 text-center">
               Introdu Game ID pentru a te conecta la un lobby:
             </p>
             <input
               type="text"
               value={joinGameId}
               onChange={e => setJoinGameId(e.target.value)}
-              className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500 w-full"
+              className="p-3 rounded-lg bg-gray-800 border border-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500 w-full mb-4"
               placeholder="Game ID"
             />
-            {/* Exemplu input sincronizat real-time */}
-            {joinGameId && (
-              <input
-                value={sharedValue}
-                onChange={handleSharedChange}
-                placeholder="Acest input e sincronizat la toți userii din același Game ID!"
-                className="p-2 border rounded mt-4 w-full text-black"
-              />
-            )}
-            {joinError && <p className="text-red-400 font-semibold">{joinError}</p>}
-            <div className="flex flex-col gap-4">
+            {joinError && <p className="text-red-400 font-semibold mb-4 text-center">{joinError}</p>}
+            <div className="flex flex-col gap-3">
               <button
                 onClick={handleCreateLobby}
-                className="bg-red-600 hover:bg-red-500 text-white font-bold py-4 px-6 rounded-xl text-xl transition-all"
+                className="bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-xl text-lg transition-all"
               >
                 🔧 Create Lobby
               </button>
               <button
                 onClick={handleJoinLobby}
-                className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-6 rounded-xl text-xl transition-all"
+                className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-xl text-lg transition-all"
+                disabled={!joinGameId.trim()}
               >
                 🔑 Join Lobby
               </button>
@@ -469,6 +486,20 @@ export default function MurderMysteryGiveaway() {
               {isCreatingLobby ? 'Se creează...' : '🚀 Creează Lobby'}
             </button>
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Add RevealSolution component at the bottom of the file
+function RevealSolution({ solution }: { solution: string }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="mt-4 text-center">
+      {show && (
+        <div className="mt-3 p-3 bg-yellow-100 text-black rounded shadow text-sm border border-yellow-400">
+          <strong>Solution:</strong> {solution}
         </div>
       )}
     </div>

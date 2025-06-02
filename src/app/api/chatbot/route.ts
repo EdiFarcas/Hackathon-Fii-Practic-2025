@@ -3,11 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(req: NextRequest) {
   try {
     const { userMessage, messageHistory } = await req.json();
-    const OPENROUTER_API_KEY = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
+    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
     if (!OPENROUTER_API_KEY) {
+      console.error('❌ OpenRouter API key OPENROUTER_API_KEY is not configured');
       return NextResponse.json({ error: 'OpenRouter API key not configured' }, { status: 500 });
     }
-
+    
     // Build the messages array for OpenRouter
     const systemPrompt = {
       role: 'system',
@@ -41,6 +42,7 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('❌ OpenRouter API error:', errorText);
       return NextResponse.json({ error: errorText }, { status: response.status });
     }
     const data = await response.json();
@@ -48,6 +50,7 @@ export async function POST(req: NextRequest) {
     const aiMessage = data.choices?.[0]?.message?.content || 'No response from AI.';
     return NextResponse.json({ result: aiMessage });
   } catch (err) {
+    console.error('❌ Error in chatbot route:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

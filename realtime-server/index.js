@@ -6,6 +6,10 @@ const cors = require("cors");
 const { PrismaClient } = require("@prisma/client");
 // const fetch = require('node-fetch');
 
+// Base URL for the bot API
+const apiUrlBase = process.env.BOT_API_URL || 'localhost:3000';
+console.log("Realtime server is using bot API URL:", apiUrlBase);
+
 // Track game rooms and their state
 const gameRooms = new Map();
 
@@ -35,6 +39,7 @@ io.on("connection", (socket) => {
       });
 
       if (!game) {
+        console.error("❌ Game not found:", gameId);
         return callback({ error: "Game not found" });
       }
 
@@ -54,6 +59,7 @@ io.on("connection", (socket) => {
       
       // Check if room is full (max 4 players)
       if (gameRoom.users.length >= 4) {
+        console.error("❌ Game room is full:", gameId);
         return callback({ error: "Game room is full" });
       }
 
@@ -77,6 +83,7 @@ io.on("connection", (socket) => {
         chatMessages: gameRoom.chatMessages
       });
 
+      console.log(`✅ User '${user.name}' joined game ${gameId}`);
       callback({ 
         success: true, 
         gameState: {
@@ -89,7 +96,7 @@ io.on("connection", (socket) => {
         userInfo 
       });
     } catch (error) {
-      console.error("Error joining game:", error);
+      console.error("❌ Error joining game:", error);
       callback({ error: "Failed to join game" });
     }
   });
@@ -109,11 +116,14 @@ io.on("connection", (socket) => {
     };
     
     gameRoom.chatMessages.push(chatMessage);
+
+    console.log(`💬 ${currentUser.name} in game ${gameId}:`, message);
+
     io.to(gameId).emit("chat-update", chatMessage);
 
     // Get bot response
     try {
-      const response = await fetch('https://testfiipractic-production.up.railway.app/api/chatbot', {
+      const response = await fetch(`${apiUrlBase}/chatbot`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -129,7 +139,7 @@ io.on("connection", (socket) => {
         })
       });
 
-      if (!response.ok) throw new Error('Bot API request failed');
+      if (!response.ok) throw new Error('Bot API request failed' + await response.text());
       const data = await response.json();
 
       // Send bot response to all users in the room
@@ -144,12 +154,12 @@ io.on("connection", (socket) => {
         };
         
         gameRoom.chatMessages.push(botMessage);
+        console.log('🤖 Bot response:', botMessage, gameId);
+
         io.to(gameId).emit("chat-update", botMessage);
       }
     } catch (error) {
-      console.error('Bot response error:', error);
-      console.print(error.message);
-      console.print(error.stack);
+      console.error('❌ Bot response error:', error);
       
       const errorMessage = {
         id: Date.now(),
@@ -173,6 +183,8 @@ io.on("connection", (socket) => {
     if (gameRoom.status === 'PLAYING' && currentUser.id !== gameRoom.hostId) return;
     
     gameRoom.currentCard = index;
+
+    console.log(`🔄 Card index synced to ${index} for game ${gameId}`);
     socket.to(gameId).emit("sync-card", index);
   });
 
@@ -181,6 +193,9 @@ io.on("connection", (socket) => {
     if (!gameRooms.has(gameId)) return;
     const gameRoom = gameRooms.get(gameId);
     gameRoom.currentTurn = turn;
+
+    console.log(`⏱️ Turn synced to ${turn} for game ${gameId}`);
+
     socket.to(gameId).emit("sync-turn", turn);
   });
 
@@ -192,6 +207,8 @@ io.on("connection", (socket) => {
         // Remove user from room
         gameRoom.users = gameRoom.users.filter(u => u.id !== currentUser.id);
         
+        console.log(`❌ User '${currentUser.name}' disconnected from game ${currentGameId}`);
+
         // Notify others
         io.to(currentGameId).emit("room-update", {
           users: gameRoom.users,
@@ -200,6 +217,7 @@ io.on("connection", (socket) => {
 
         // Clean up empty rooms
         if (gameRoom.users.length === 0) {
+          console.log(`🧹 Game room ${currentGameId} is empty, removing it`);
           gameRooms.delete(currentGameId);
         }
       }
@@ -209,5 +227,5 @@ io.on("connection", (socket) => {
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
-  console.log("Socket.IO server running on port", PORT);
+  console.log("✔️  Realtime server running on port", PORT);
 });
